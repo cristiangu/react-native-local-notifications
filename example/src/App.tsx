@@ -1,15 +1,19 @@
 import React, { useCallback } from 'react';
 
 import { StyleSheet, View, Button } from 'react-native';
-import { scheduleNotification } from 'react-native-local-notifications';
+import {
+  scheduleNotification,
+  cancelScheduledNotifications,
+  cancelAllScheduledNotifications,
+} from 'react-native-local-notifications';
 
 export default function App() {
   const onPress = useCallback(async () => {
     await scheduleNotification(
       {
         id: 'my_id',
-        title: 'Hello',
-        body: 'World',
+        title: 'Title',
+        body: 'New',
       },
       {
         timestamp: Date.now() + 5000,
@@ -17,9 +21,19 @@ export default function App() {
     );
   }, []);
 
+  const cancelById = useCallback(async () => {
+    await cancelScheduledNotifications(['my_id']);
+  }, []);
+
+  const cancelAll = useCallback(async () => {
+    await cancelAllScheduledNotifications();
+  }, []);
+
   return (
     <View style={styles.container}>
       <Button title="Press me" onPress={onPress} />
+      <Button title="Cancel by id" onPress={cancelById} />
+      <Button title="Cancel all" onPress={cancelAll} />
     </View>
   );
 }

@@ -34,3 +34,11 @@ export function scheduleNotification(
 ): Promise<string> {
   return LocalNotifications.scheduleNotification(notification, trigger);
 }
+
+export function cancelScheduledNotifications(ids: string[]): Promise<string> {
+  return LocalNotifications.cancelScheduledNotifications(ids);
+}
+
+export function cancelAllScheduledNotifications(): Promise<string> {
+  return LocalNotifications.cancelAllScheduledNotifications();
+}

@@ -46,6 +46,10 @@ export interface Spec extends TurboModule {
     notification: Notification,
     trigger: NotificationTrigger
   ): Promise<string>;
+
+  cancelScheduledNotifications(ids: string[]): Promise<string>;
+
+  cancelAllScheduledNotifications(): Promise<string>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LocalNotifications');
