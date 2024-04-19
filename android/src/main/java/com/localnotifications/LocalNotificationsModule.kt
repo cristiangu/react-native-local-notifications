@@ -5,6 +5,7 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.localnotifications.util.ArrayUtil
 
 class LocalNotificationsModule internal constructor(val context: ReactApplicationContext) :
   LocalNotificationsSpec(context) {
@@ -30,7 +31,7 @@ class LocalNotificationsModule internal constructor(val context: ReactApplicatio
     val smallIconResName = androidParamsMap?.getString("smallIcon")
     val dateInMillis = trigger.getDouble("timestamp").toLong()
 
-    NotificationScheduler().scheduleNotification(
+    NotificationScheduler.scheduleNotification(
       context,
       title,
       body,
@@ -44,11 +45,21 @@ class LocalNotificationsModule internal constructor(val context: ReactApplicatio
 
   @ReactMethod
   override fun cancelScheduledNotifications(ids: ReadableArray?, promise: Promise?) {
+    if(ids == null || ids.size() == 0) {
+      promise?.resolve(null)
+      return
+    }
+    val safeIds = (ArrayUtil.toArray(ids) as? Array<*>)?.filterIsInstance<String>() ?: listOf()
+    NotificationScheduler.cancelScheduledNotifications(
+      safeIds.toTypedArray(),
+      context
+    )
     promise?.resolve(null)
   }
 
   @ReactMethod
   override fun cancelAllScheduledNotifications(promise: Promise?) {
+    NotificationScheduler.cancelAllScheduledNotifications(context)
     promise?.resolve(null)
   }
 

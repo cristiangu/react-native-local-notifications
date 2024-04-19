@@ -37,8 +37,10 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Button title="Press me" onPress={onPress} />
+      <Button title="Schedule notification" onPress={onPress} />
+      <View style={styles.verticalSpacer} />
       <Button title="Cancel by id" onPress={cancelById} />
+      <View style={styles.verticalSpacer} />
       <Button title="Cancel all" onPress={cancelAll} />
     </View>
   );
@@ -50,9 +52,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  box: {
-    width: 60,
-    height: 60,
-    marginVertical: 20,
+  verticalSpacer: {
+    height: 20,
   },
 });

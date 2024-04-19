@@ -8,7 +8,7 @@ import android.util.Log
 
 
 object IntentUtil {
-  private const val TAG = "IntentUtils"
+  private const val TAG = "IntentUtil"
   fun isAvailableOnDevice(ctx: Context?, intent: Intent?): Boolean {
     return try {
       if (ctx == null || intent == null) {
