@@ -14,6 +14,12 @@ export default function App() {
         id: 'my_id',
         title: 'Title',
         body: 'New',
+        data: {
+          url: 'https://example.com',
+        },
+        android: {
+          smallIcon: 'ic_launcher',
+        },
       },
       {
         timestamp: Date.now() + 5000,
