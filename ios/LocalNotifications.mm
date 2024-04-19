@@ -4,37 +4,38 @@
 @implementation LocalNotifications
 RCT_EXPORT_MODULE()
 
-// Example method
-// See // https://reactnative.dev/docs/native-modules-ios
-//RCT_EXPORT_METHOD(multiply:(double)a
-//                  b:(double)b
-//                  resolve:(RCTPromiseResolveBlock)resolve
-//                  reject:(RCTPromiseRejectBlock)reject)
-//{
-//    NSNumber *result = @(a * b);
-//    
-//    [NotificationScheduler 
-//     scheduleNotificationWithTitle:@"Test title"
-//     body:@"Test body"
-//     triggerDate:[NSDate dateWithTimeIntervalSinceNow:60]
-//    ];
-//
-//    resolve(result);
-//}
-
-
 RCT_EXPORT_METHOD(scheduleNotification:
                   (JS::NativeLocalNotifications::Notification &)notification
                   trigger: (JS::NativeLocalNotifications::NotificationTrigger &)trigger
                   resolve: (RCTPromiseResolveBlock) resolve
                   reject: (RCTPromiseRejectBlock) reject)
 {
-//    [NotifeeCore createTriggerNotification:notification withTrigger:trigger withBlock:^(NSError *_Nullable error) {
-//        
-//      [self resolve:resolve orReject:reject promiseWithError:error orResult:nil];
-//    }];
+    
+    [NotificationScheduler
+         scheduleNotificationWithTitle: notification.title()
+         body: notification.body()
+         data: (NSMutableDictionary * _Nullable) notification.data()
+         scheduleId: notification.id_()
+         triggerDate: [NSDate dateWithTimeIntervalSince1970: trigger.timestamp() / 1000]
+    ];
     resolve(NULL);
-  }
+}
+
+RCT_EXPORT_METHOD(cancelScheduledNotifications:(NSArray *)ids
+                  resolve: (RCTPromiseResolveBlock) resolve
+                  reject: (RCTPromiseRejectBlock) reject)
+{
+    
+    [NotificationScheduler cancelScheduledNotificationsWithScheduleIds:ids];
+    resolve(NULL);
+}
+
+- (void)cancelAllScheduledNotifications:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+    
+    [NotificationScheduler cancelAllScheduledNotifications];
+    resolve(NULL);
+}
+
 
 // Don't compile this code when we build for the old architecture.
 #ifdef RCT_NEW_ARCH_ENABLED

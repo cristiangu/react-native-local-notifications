@@ -1,6 +1,10 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
+export interface NotificationAndroid {
+  smallIcon?: string;
+}
+
 export interface Notification {
   /**
    * A unique identifier for your notification.
@@ -34,6 +38,8 @@ export interface Notification {
    * at a later point in time (e.g. via an event).
    */
   data?: { [key: string]: string | object | number };
+
+  android?: NotificationAndroid;
 }
 export interface NotificationTrigger {
   /**
@@ -46,6 +52,10 @@ export interface Spec extends TurboModule {
     notification: Notification,
     trigger: NotificationTrigger
   ): Promise<string>;
+
+  cancelScheduledNotifications(ids: string[]): Promise<string>;
+
+  cancelAllScheduledNotifications(): Promise<string>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LocalNotifications');
