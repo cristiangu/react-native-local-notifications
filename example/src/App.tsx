@@ -5,7 +5,7 @@ import {
   scheduleNotification,
   cancelScheduledNotifications,
   cancelAllScheduledNotifications,
-} from 'react-native-local-notifications';
+} from '@guulabs/react-native-local-notifications';
 
 export default function App() {
   const onPress = useCallback(async () => {

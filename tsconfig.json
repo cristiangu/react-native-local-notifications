@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "react-native-local-notifications": ["./src/index"]
+      "@guulabs/react-native-local-notifications": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
