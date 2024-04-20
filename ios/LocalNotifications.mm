@@ -4,6 +4,7 @@
 @implementation LocalNotifications
 RCT_EXPORT_MODULE()
 
+#ifdef RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_METHOD(scheduleNotification:
                   (JS::NativeLocalNotifications::Notification &)notification
                   trigger: (JS::NativeLocalNotifications::NotificationTrigger &)trigger
@@ -21,6 +22,27 @@ RCT_EXPORT_METHOD(scheduleNotification:
     resolve(NULL);
 }
 
+#else
+RCT_EXPORT_METHOD(scheduleNotification:
+                  (NSDictionary *)notification
+                  trigger: (NSDictionary *)trigger
+                  resolve: (RCTPromiseResolveBlock) resolve
+                  reject: (RCTPromiseRejectBlock) reject)
+{
+    
+    [NotificationScheduler
+         scheduleNotificationWithTitle: [notification objectForKey:@"title"]
+         body: [notification objectForKey:@"body"]
+         data: (NSMutableDictionary * _Nullable) [notification objectForKey:@"data"]
+         scheduleId: [notification valueForKey:@"id"]
+         triggerDate: [NSDate dateWithTimeIntervalSince1970:
+                       [[trigger valueForKey:@"timestamp"] longValue] / 1000
+                      ]
+    ];
+    resolve(NULL);
+}
+#endif
+
 RCT_EXPORT_METHOD(cancelScheduledNotifications:(NSArray *)ids
                   resolve: (RCTPromiseResolveBlock) resolve
                   reject: (RCTPromiseRejectBlock) reject)
@@ -35,6 +57,7 @@ RCT_EXPORT_METHOD(cancelScheduledNotifications:(NSArray *)ids
     [NotificationScheduler cancelAllScheduledNotifications];
     resolve(NULL);
 }
+
 
 
 // Don't compile this code when we build for the old architecture.
