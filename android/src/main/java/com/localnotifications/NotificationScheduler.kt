@@ -17,7 +17,6 @@ import kotlinx.coroutines.runBlocking
 
 
 object NotificationScheduler {
-  private const val TAG = "NotificationScheduler"
 
   @SuppressLint("ScheduleExactAlarm")
   public fun scheduleNotification(
@@ -68,7 +67,6 @@ object NotificationScheduler {
     }
 
   }
-
 
   private fun createNotificationChannel(context: Context) {
     if (Build.VERSION.SDK_INT < 26) {
