@@ -9,22 +9,20 @@ import {
 
 export default function App() {
   const onPress = useCallback(async () => {
-    await scheduleNotification(
+    const id = await scheduleNotification(
       {
-        id: 'my_id',
         title: 'Title',
         body: 'New',
-        data: {
-          url: 'https://example.com',
-        },
         android: {
           smallIcon: 'ic_launcher',
+          color: '#0000ff',
         },
       },
       {
         timestamp: Date.now() + 5000,
       }
     );
+    console.log('Scheduled notification with id:', id);
   }, []);
 
   const cancelById = useCallback(async () => {

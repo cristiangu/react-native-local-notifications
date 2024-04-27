@@ -10,8 +10,8 @@ abstract class LocalNotificationsSpec internal constructor(context: ReactApplica
   ReactContextBaseJavaModule(context) {
 
   abstract fun scheduleNotification(
-    notification: ReadableMap?,
-    trigger: ReadableMap?,
+    notification: ReadableMap,
+    trigger: ReadableMap,
     promise: Promise?
   )
 

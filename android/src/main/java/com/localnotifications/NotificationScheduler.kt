@@ -14,28 +14,33 @@ import com.localnotifications.util.MapUtil
 import com.localnotifications.util.ResourceUtil
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import java.util.UUID
 
 
 object NotificationScheduler {
 
   @SuppressLint("ScheduleExactAlarm")
-  public fun scheduleNotification(
+  fun scheduleNotification(
     context: ReactApplicationContext,
     title: String,
     body: String?,
+    colorHex: String?,
     data: ReadableMap?,
     smallIconResName: String?,
-    scheduleId: String,
+    scheduleId: String?,
     triggerDateInMillis: Long
-  ) {
+  ): String {
     createNotificationChannel(context)
 
     // Create an intent for the Notification BroadcastReceiver
     val intent = getNotificationIntent(context)
     intent.putExtra(EXTRA_TITLE, title)
     intent.putExtra(EXTRA_MESSAGE, body)
-    intent.putExtra(EXTRA_SCHEDULE_ID, scheduleId.hashCode())
-    intent.putExtra(EXTRA_DATA, MapUtil.toJSONObject(data).toString())
+    val safeScheduleId = scheduleId ?: UUID.randomUUID().toString()
+    intent.putExtra(EXTRA_SCHEDULE_ID, safeScheduleId.hashCode())
+    if(data != null) {
+      intent.putExtra(EXTRA_DATA, MapUtil.toJSONObject(data).toString())
+    }
 
     val safeSmallIconResName = ResourceUtil.getImageResourceId(
       smallIconResName ?: "ic_launcher",
@@ -43,8 +48,12 @@ object NotificationScheduler {
     )
     intent.putExtra(EXTRA_SMALL_ICON_RES_ID, safeSmallIconResName)
 
+    if(colorHex != null) {
+      intent.putExtra(EXTRA_COLOR, colorHex)
+    }
+
     // Create a PendingIntent for the broadcast
-    val pendingIntent = getBroadcastPendingIntent(context, scheduleId, intent)
+    val pendingIntent = getBroadcastPendingIntent(context, safeScheduleId, intent)
     // Get the AlarmManager service
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -63,9 +72,10 @@ object NotificationScheduler {
     }
 
     runBlocking(Dispatchers.IO) {
-      LocalStorage.addScheduleIds(arrayOf(scheduleId), context)
+      LocalStorage.addScheduleIds(arrayOf(safeScheduleId), context)
     }
 
+    return safeScheduleId
   }
 
   private fun createNotificationChannel(context: Context) {

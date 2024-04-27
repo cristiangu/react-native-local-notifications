@@ -3,6 +3,7 @@ import { TurboModuleRegistry } from 'react-native';
 
 export interface NotificationAndroid {
   smallIcon?: string;
+  color?: string;
 }
 
 export interface Notification {

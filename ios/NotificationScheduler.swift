@@ -6,10 +6,9 @@ import UserNotifications
         title: String,
         body: String,
         data: NSMutableDictionary?,
-        scheduleId: String,
+        scheduleId: String?,
         triggerDate: Date
-    ) {
-        
+    ) -> String {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
@@ -26,15 +25,17 @@ import UserNotifications
             ),
             repeats: false
         )
-        
-        let request = UNNotificationRequest(identifier: scheduleId, content: content, trigger: trigger)
+        let safeScheduleId = scheduleId ?? UUID().uuidString
+        let request = UNNotificationRequest(identifier: safeScheduleId, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request) { error in
+            let tag = "[react-native-local-notifications]"
             if let error = error {
-                print("Error scheduling notification: \(error.localizedDescription)")
+                print("\(tag) Error scheduling notification: \(error.localizedDescription)")
             } else {
-                print("Notification scheduled successfully at " + triggerDate.description)
+                print("\(tag) Notification scheduled successfully at \(triggerDate.description)")
             }
         }
+        return safeScheduleId
     }
     
     @objc public static func cancelScheduledNotifications(scheduleIds: [String]) {

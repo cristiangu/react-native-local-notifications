@@ -16,31 +16,34 @@ class LocalNotificationsModule internal constructor(val context: ReactApplicatio
 
   @ReactMethod
   override fun scheduleNotification(
-    notification: ReadableMap?,
-    trigger: ReadableMap?,
+    notification: ReadableMap,
+    trigger: ReadableMap,
     promise: Promise?
   ) {
-    if(notification == null || trigger == null) {
+    val title = notification.getString("title")
+    if(title == null) {
+      promise?.reject("Error", "Title prop is missing.")
       return
     }
-    val title = notification.getString("title") ?: return
     val body = notification.getString("body")
     val data = notification.getMap("data")
-    val scheduleId = notification.getString("id")?: return
+    val scheduleId = notification.getString("id")
     val androidParamsMap = notification.getMap("android")
     val smallIconResName = androidParamsMap?.getString("smallIcon")
+    val colorHex = androidParamsMap?.getString("color")
     val dateInMillis = trigger.getDouble("timestamp").toLong()
 
-    NotificationScheduler.scheduleNotification(
+    val scheduledId = NotificationScheduler.scheduleNotification(
       context,
       title,
       body,
+      colorHex,
       data,
       smallIconResName,
       scheduleId,
       dateInMillis
     )
-    promise?.resolve(null)
+    promise?.resolve(scheduledId)
   }
 
   @ReactMethod
