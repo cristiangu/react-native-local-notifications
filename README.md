@@ -1,21 +1,49 @@
-# react-native-local-notifications
+<a href="https://guulabs.com">
+  <img src="./docs/cover.png" width="100%" />
+</a>
 
-Send local notifications on iOS and Android.
+<div align="center">
+
+  <h1>
+    📢<br/>
+    @guulabs/react-native-local-notifications <br/> <br/>
+  </h1>
+
+  <b>Lightweight local notifications scheduler on iOS and Android for React Native.</b>
+</div>
 
 ## Installation
 
 ```sh
-npm install react-native-local-notifications
+yarn add @guulabs/react-native-local-notifications
 ```
 
 ## Usage
 
 ```js
-import { multiply } from 'react-native-local-notifications';
+import {
+  scheduleNotification,
+  cancelScheduledNotifications,
+  cancelAllScheduledNotifications,
+} from '@guulabs/react-native-local-notifications';
 
 // ...
 
-const result = await multiply(3, 7);
+const id = await scheduleNotification(
+  {
+    title: 'Title',
+    body: 'This is the body of the local notification.',
+  },
+  {
+    timestamp: Date.now() + 5000,
+  }
+);
+
+// Cancel some scheduled notifications
+await cancelScheduledNotifications([id, "another_id1", "another_id2"]);
+
+// Cancel all
+await cancelAllScheduledNotifications();
 ```
 
 ## Contributing
