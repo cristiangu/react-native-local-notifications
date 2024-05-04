@@ -31,6 +31,10 @@ class LocalNotificationsModule internal constructor(val context: ReactApplicatio
     val androidParamsMap = notification.getMap("android")
     val smallIconResName = androidParamsMap?.getString("smallIcon")
     val colorHex = androidParamsMap?.getString("color")
+    if(!trigger.hasKey("timestamp")) {
+      promise?.reject("Error", "Timestamp prop is missing.")
+      return
+    }
     val dateInMillis = trigger.getDouble("timestamp").toLong()
 
     val scheduledId = NotificationScheduler.scheduleNotification(

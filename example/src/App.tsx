@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 
 import { StyleSheet, View, Button } from 'react-native';
 import {
@@ -8,6 +8,8 @@ import {
 } from '@guulabs/react-native-local-notifications';
 
 export default function App() {
+  const [ids, setIds] = useState<string[]>([]);
+
   const onPress = useCallback(async () => {
     const id = await scheduleNotification(
       {
@@ -17,17 +19,21 @@ export default function App() {
           smallIcon: 'ic_launcher',
           color: '#0000ff',
         },
+        data: {
+          key: 'value',
+        },
       },
       {
         timestamp: Date.now() + 5000,
       }
     );
+    setIds((prevIds) => [...prevIds, id]);
     console.log('Scheduled notification with id:', id);
   }, []);
 
   const cancelById = useCallback(async () => {
-    await cancelScheduledNotifications(['my_id']);
-  }, []);
+    await cancelScheduledNotifications(ids);
+  }, [ids]);
 
   const cancelAll = useCallback(async () => {
     await cancelAllScheduledNotifications();
