@@ -5,11 +5,10 @@
 <div align="center">
 
   <h1>
-    📢<br/>
     @guulabs/react-native-local-notifications <br/> <br/>
   </h1>
 
-  <b>Lightweight local notifications scheduler on iOS and Android for React Native.</b>
+  <b>Schedule local notifications from React Native on iOS and Android.</b>
 </div>
 
 ## Installation
@@ -39,12 +38,37 @@ const id = await scheduleNotification(
   }
 );
 
-// Cancel some scheduled notifications
+// Cancel scheduled notifications
 await cancelScheduledNotifications([id, "another_id1", "another_id2"]);
 
 // Cancel all
 await cancelAllScheduledNotifications();
 ```
+## Android
+Set a custom icon and set an accent color.
+```js
+const id = await scheduleNotification(
+  {
+    title: 'Title',
+    body: 'This is the body of the local notification.',
+    android: {
+      smallIcon: 'ic_launcher',
+      color: '#0000ff',
+    }
+  },
+  {
+    timestamp: Date.now() + 5000,
+  }
+);
+```
+
+## API
+| Param name | Type                                         | Default                        | Description                                                                                                                                          |
+|------------|----------------------------------------------|--------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| title      | `string`                                     |    -                           | Title of the local notification.       |
+| body       | `string`                                     |    -                           |  The body for the local notification.  |
+| android    | ` { smallIcon: string, color: string } `     | `{ smallIcon: 'ic_launcher' }` | Use `smallIcon` to set a custom resource name (drawable or mipmap) for the notification icon on Android. </br> Use `color` to set a hex accent color for the notification on Android. |
+| timestamp  | `number`                                     |    -                           | The date in milliseconds when the local notfication should be dispatched. |
 
 ## Contributing
 
