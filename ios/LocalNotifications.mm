@@ -15,14 +15,21 @@ RCT_EXPORT_METHOD(scheduleNotification:
                   reject: (RCTPromiseRejectBlock) reject)
 {
     
-    [NotificationScheduler
-     scheduleNotificationWithTitle: notification.title()
-     body: notification.body()
-     data: (NSMutableDictionary * _Nullable) notification.data()
-     scheduleId: notification.id_()
-     triggerDate: [NSDate dateWithTimeIntervalSince1970: trigger.timestamp() / 1000]
+    if(notification.title() == NULL) {
+        NSString *message = [NSString stringWithFormat:@"%@ Title prop is missing.", TAG];
+        reject(@"error", message, NULL);
+        return;
+    }
+    
+    NSString *scheduleId = [NotificationScheduler
+                            scheduleNotificationWithTitle: notification.title()
+                            body: notification.body()
+                            data: (NSMutableDictionary * _Nullable) notification.data()
+                            scheduleId: notification.id_()
+                            triggerDate: [NSDate dateWithTimeIntervalSince1970: trigger.timestamp() / 1000]
     ];
-    resolve(NULL);
+    
+    resolve(scheduleId);
 }
 
 #else
