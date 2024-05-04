@@ -38,7 +38,7 @@ const id = await scheduleNotification(
   }
 );
 
-// Cancel scheduled notifications
+// Cancel a list of notification ids
 await cancelScheduledNotifications([id, "another_id1", "another_id2"]);
 
 // Cancel all
