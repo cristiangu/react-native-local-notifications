@@ -1,6 +1,6 @@
 {
   "name": "@guulabs/react-native-local-notifications",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Send local notifications on iOS and Android.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
