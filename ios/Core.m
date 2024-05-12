@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import "Core.h"
 #import "CoreDelegateHolder.h"
+#import "LocalNotifications+UNUserNotificationsCenter.h"
 
 @implementation Core
 
@@ -20,8 +21,8 @@
   for (id key in userInfo) {
     // build data dict from remaining keys but skip keys that shouldn't be included in data
     if ([key isEqualToString:@"aps"] || [key hasPrefix:@"gcm."] || [key hasPrefix:@"google."] ||
-        // notifee or notifee_options
-        [key hasPrefix:@"notifee"] ||
+        // guu or guu_options
+        [key hasPrefix:@"guu"] ||
         // fcm_options
         [key hasPrefix:@"fcm"]) {
       continue;
@@ -148,6 +149,11 @@
   dictionary[@"data"] = [self parseDataFromUserInfo:userInfo];
 
   return dictionary;
+}
+
++ (void)getInitialNotification:(guuMethodNSDictionaryBlock)block {
+  [LocalNotificationsUNUserNotificationCenter instance].initialNotificationBlock = block;
+  [[LocalNotificationsUNUserNotificationCenter instance] getInitialNotification];
 }
 
 @end

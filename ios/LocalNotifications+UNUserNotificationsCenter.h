@@ -1,6 +1,5 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
-//#import "NotifeeCore.h"
 
 
 typedef void (^guuLabsMethodNSDictionaryBlock)(NSError *_Nullable, NSDictionary *_Nullable);
@@ -24,8 +23,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSDictionary *)getInitialNotification;
 
 - (void)onDidFinishLaunchingNotification:(NSDictionary *)notification;
-
-//+ (UNMutableNotificationContent *)buildNotificationContent:(NSDictionary *)notification;
 
 @end
 

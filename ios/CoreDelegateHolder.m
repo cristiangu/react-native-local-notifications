@@ -22,7 +22,7 @@
   if (delegate != aDelegate) {
     delegate = aDelegate;
     self->delegateRespondsTo.didReceiveNotificationEvent =
-        (unsigned int)[delegate respondsToSelector:@selector(didReceiveNotifeeCoreEvent:)];
+        (unsigned int)[delegate respondsToSelector:@selector(didReceiveGuuCoreEvent:)];
     if (_pendingEvents.count > 0) {
       // make sure events are only processed once the module that wraps core has
       // set its delegate
@@ -33,7 +33,7 @@
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)),
                        dispatch_get_main_queue(), ^{
                          for (NSDictionary *event in self->_pendingEvents) {
-                           [self didReceiveNotifeeCoreEvent:event];
+                           [self didReceiveGuuCoreEvent:event];
                          }
                          self->_pendingEvents = [[NSMutableArray alloc] init];
                        });
@@ -42,9 +42,9 @@
   }
 }
 
-- (void)didReceiveNotifeeCoreEvent:(NSDictionary *)notificationEvent {
+- (void)didReceiveGuuCoreEvent:(NSDictionary *)notificationEvent {
   if (self->delegateRespondsTo.didReceiveNotificationEvent) {
-    [self->delegate didReceiveNotifeeCoreEvent:notificationEvent];
+    [self->delegate didReceiveGuuCoreEvent:notificationEvent];
   } else {
     [self->_pendingEvents addObject:notificationEvent];
   }

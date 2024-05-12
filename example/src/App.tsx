@@ -1,14 +1,31 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { StyleSheet, View, Button } from 'react-native';
 import {
   scheduleNotification,
   cancelScheduledNotifications,
   cancelAllScheduledNotifications,
+  onForegroundEvent,
+  getInitialNotification,
 } from '@guulabs/react-native-local-notifications';
 
 export default function App() {
   const [ids, setIds] = useState<string[]>([]);
+
+  const onInitialNotification = useCallback(async () => {
+    const initialNotification = await getInitialNotification();
+    console.log('Initial notification:', initialNotification);
+  }, []);
+
+  useEffect(() => {
+    onInitialNotification();
+
+    // @ts-expect-error
+    onForegroundEvent(({ type, detail }) => {
+      console.log('Aaaaa:', type, detail);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const onPress = useCallback(async () => {
     const id = await scheduleNotification(

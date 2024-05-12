@@ -46,8 +46,8 @@ struct {
 
 - (void)onDidFinishLaunchingNotification:(nonnull NSDictionary *)notifUserInfo {
   if (notifUserInfo != nil) {
-    NSDictionary *notifeeNotification = notifUserInfo[kNotifeeUserInfoNotification];
-    _initialNoticationID = notifeeNotification[@"id"];
+    NSDictionary *guuNotification = notifUserInfo[kGuuUserInfoNotification];
+    _initialNoticationID = guuNotification[@"id"];
   }
 
   _initialNotificationGathered = YES;
@@ -83,14 +83,14 @@ struct {
        willPresentNotification:(UNNotification *)notification
          withCompletionHandler:
              (void (^)(UNNotificationPresentationOptions options))completionHandler {
-  NSDictionary *notifeeNotification =
-      notification.request.content.userInfo[kNotifeeUserInfoNotification];
+  NSDictionary *guuNotification =
+      notification.request.content.userInfo[kGuuUserInfoNotification];
 
-  // we only care about notifications created through notifee
-  if (notifeeNotification != nil) {
+  // we only care about notifications created through guu
+  if (guuNotification != nil) {
     UNNotificationPresentationOptions presentationOptions = UNNotificationPresentationOptionNone;
     NSDictionary *foregroundPresentationOptions =
-        notifeeNotification[@"ios"][@"foregroundPresentationOptions"];
+        guuNotification[@"ios"][@"foregroundPresentationOptions"];
 
     BOOL alert = [foregroundPresentationOptions[@"alert"] boolValue];
     BOOL badge = [foregroundPresentationOptions[@"badge"] boolValue];
@@ -126,17 +126,17 @@ struct {
         }
       }
     } else if (alert) {
-      // TODO: remove alert once it has been fully removed from the notifee API
+      // TODO: remove alert once it has been fully removed from the guu API
       presentationOptions |= UNNotificationPresentationOptionAlert;
     }
 
-    NSDictionary *notifeeTrigger = notification.request.content.userInfo[kNotifeeUserInfoTrigger];
-    if (notifeeTrigger != nil) {
+    NSDictionary *guuTrigger = notification.request.content.userInfo[kGuuUserInfoTrigger];
+    if (guuTrigger != nil) {
       // post DELIVERED event
-      [[CoreDelegateHolder instance] didReceiveNotifeeCoreEvent:@{
+      [[CoreDelegateHolder instance] didReceiveGuuCoreEvent:@{
         @"type" : @(CoreEventTypeDelivered),
         @"detail" : @{
-          @"notification" : notifeeNotification,
+          @"notification" : guuNotification,
         }
       }];
     }
@@ -157,24 +157,24 @@ struct {
 - (void)userNotificationCenter:(UNUserNotificationCenter *)center
     didReceiveNotificationResponse:(UNNotificationResponse *)response
              withCompletionHandler:(void (^)(void))completionHandler {
-  NSDictionary *notifeeNotification =
-      response.notification.request.content.userInfo[kNotifeeUserInfoNotification];
+  NSDictionary *guuNotification =
+      response.notification.request.content.userInfo[kGuuUserInfoNotification];
 
-  _notificationOpenedAppID = notifeeNotification[@"id"];
+  _notificationOpenedAppID = guuNotification[@"id"];
 
-  // handle notification outside of notifee
-  if (notifeeNotification == nil) {
-    notifeeNotification =
+  // handle notification outside of guu
+  if (guuNotification == nil) {
+    guuNotification =
         [Core parseUNNotificationRequest:response.notification.request];
   }
 
-  if (notifeeNotification != nil) {
+  if (guuNotification != nil) {
     if ([response.actionIdentifier isEqualToString:UNNotificationDismissActionIdentifier]) {
       // post DISMISSED event, only triggers if notification has a categoryId
-      [[CoreDelegateHolder instance] didReceiveNotifeeCoreEvent:@{
+      [[CoreDelegateHolder instance] didReceiveGuuCoreEvent:@{
         @"type" : @(CoreEventTypeDismissed),
         @"detail" : @{
-          @"notification" : notifeeNotification,
+          @"notification" : guuNotification,
         }
       }];
       return;
@@ -204,7 +204,7 @@ struct {
     event[@"type"] = eventType;
 
     // event.detail.notification
-    eventDetail[@"notification"] = notifeeNotification;
+    eventDetail[@"notification"] = guuNotification;
 
     // event.detail.pressAction
     eventDetail[@"pressAction"] = eventDetailPressAction;
@@ -222,7 +222,7 @@ struct {
       eventDetail[@"initialNotification"] = @1;
     }
 
-    [[CoreDelegateHolder instance] didReceiveNotifeeCoreEvent:event];
+    [[CoreDelegateHolder instance] didReceiveGuuCoreEvent:event];
 
     // TODO figure out if this is needed or if we can just complete immediately
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(15 * NSEC_PER_SEC)),

@@ -11,8 +11,8 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-static NSString *kNotifeeUserInfoNotification = @"__guulabs_notification";
-static NSString *kNotifeeUserInfoTrigger = @"__guulabs_trigger";
+static NSString *kGuuUserInfoNotification = @"__guulabs_notification";
+static NSString *kGuuUserInfoTrigger = @"__guulabs_trigger";
 
 typedef NS_ENUM(NSInteger, CoreEventType) {
   CoreEventTypeDismissed = 0,
@@ -20,11 +20,13 @@ typedef NS_ENUM(NSInteger, CoreEventType) {
   CoreEventTypeTriggerNotificationCreated = 7,
 };
 
+typedef void (^guuMethodNSDictionaryBlock)(NSError *_Nullable, NSDictionary *_Nullable);
+
 @class Core;
 
 @protocol CoreDelegate <NSObject>
 @optional
-- (void)didReceiveNotifeeCoreEvent:(NSDictionary *_Nonnull)event;
+- (void)didReceiveGuuCoreEvent:(NSDictionary *_Nonnull)event;
 @end
 
 
@@ -33,6 +35,8 @@ typedef NS_ENUM(NSInteger, CoreEventType) {
 + (NSDictionary *)parseUNNotificationRequest:(UNNotificationRequest *)request;
 
 + (void)setCoreDelegate:(id<CoreDelegate>)coreDelegate;
+
++ (void)getInitialNotification:(guuMethodNSDictionaryBlock)block;
 
 @end
 

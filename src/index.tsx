@@ -1,12 +1,11 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules, Platform, NativeEventEmitter } from 'react-native';
 import type {
   Notification,
   NotificationTrigger,
 } from './NativeLocalNotifications';
 import { isFunction } from './validate';
-import emitter from './JSEventEmitter';
 
-export const kReactNativeNotifeeNotificationEvent =
+export const kReactNativeGuuNotificationEvent =
   'app.guulabs.notification-event';
 
 const LINKING_ERROR =
@@ -37,7 +36,14 @@ export function scheduleNotification(
   notification: Notification,
   trigger: NotificationTrigger
 ): Promise<string> {
-  return LocalNotifications.scheduleNotification(notification, trigger);
+  const data = {
+    ...notification.data,
+    __guulabs_notification: {
+      id: 'lalala',
+    },
+  };
+  const _notification = { ...notification, data: data };
+  return LocalNotifications.scheduleNotification(_notification, trigger);
 }
 
 export function cancelScheduledNotifications(ids: string[]): Promise<string> {
@@ -53,12 +59,14 @@ export function onForegroundEvent(
 ): () => void {
   if (!isFunction(observer)) {
     throw new Error(
-      "notifee.onForegroundEvent(*) 'observer' expected a function."
+      "guulabs.onForegroundEvent(*) 'observer' expected a function."
     );
   }
 
-  const subscriber = emitter.addListener(
-    kReactNativeNotifeeNotificationEvent,
+  const eventEmitter = new NativeEventEmitter(LocalNotifications);
+  let subscription = null;
+  subscription = eventEmitter.addListener(
+    kReactNativeGuuNotificationEvent,
     ({ type, detail }) => {
       // @ts-expect-error
       observer({ type, detail });
@@ -66,6 +74,10 @@ export function onForegroundEvent(
   );
 
   return (): void => {
-    subscriber.remove();
+    subscription.remove();
   };
+}
+
+export function getInitialNotification(): Promise<Notification | null> {
+  return LocalNotifications.getInitialNotification();
 }

@@ -57,6 +57,11 @@ export interface Spec extends TurboModule {
   cancelScheduledNotifications(ids: string[]): Promise<string>;
 
   cancelAllScheduledNotifications(): Promise<string>;
+
+  addListener: (eventType: string) => void;
+  removeListeners: (count: number) => void;
+
+  getInitialNotification(): Promise<Notification | null>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LocalNotifications');
