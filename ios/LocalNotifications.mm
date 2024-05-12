@@ -1,11 +1,32 @@
 #import "LocalNotifications.h"
+#import <React/RCTUtils.h>
+#import <UIKit/UIKit.h>
+#import "Core.h"
 #import "react_native_local_notifications-Swift.h"
+
+static NSString *kReactNativeNotifeeNotificationEvent = @"app.guulabs.notification-event";
+
+
 
 @implementation LocalNotifications
 RCT_EXPORT_MODULE()
 
+struct {
+    unsigned int didReceiveNotificationEvent : 1;
+  } delegateRespondsTo;
 
+bool hasListeners;
+NSMutableArray *pendingCoreEvents;
 NSString *TAG = @"[react-native-local-notifications]";
+
+
+- (id)init {
+  if (self = [super init]) {
+    pendingCoreEvents = [[NSMutableArray alloc] init];
+    [Core setCoreDelegate: self];
+  }
+  return self;
+}
 
 #ifdef RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_METHOD(scheduleNotification:
@@ -92,5 +113,47 @@ RCT_EXPORT_METHOD(cancelScheduledNotifications:(NSArray *)ids
     return std::make_shared<facebook::react::NativeLocalNotificationsSpecJSI>(params);
 }
 #endif
+
+- (NSArray<NSString *> *)supportedEvents {
+  return @[ kReactNativeNotifeeNotificationEvent ];
+}
+
+- (void)sendEvent:(NSDictionary *_Nonnull)eventBody {
+  dispatch_after(
+      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        if (RCTRunningInAppExtension() ||
+            [UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+          //[self sendEventWithName:kReactNativeNotifeeNotificationBackgroundEvent body:eventBody];
+        } else {
+          [self sendEventWithName:kReactNativeNotifeeNotificationEvent body:eventBody];
+        }
+      });
+}
+
+- (void)didReceiveNotifeeCoreEvent:(NSDictionary *_Nonnull)event {
+  if (hasListeners) {
+    [self sendEvent:event];
+  } else {
+    [pendingCoreEvents addObject:event];
+  }
+}
+
+- (void)startObserving {
+  hasListeners = YES;
+  for (NSDictionary *eventBody in pendingCoreEvents) {
+    [self sendEvent:eventBody];
+  }
+  [pendingCoreEvents removeAllObjects];
+}
+
+- (void)stopObserving {
+  hasListeners = NO;
+}
+
++ (BOOL)requiresMainQueueSetup {
+  return YES;
+}
+
+
 
 @end

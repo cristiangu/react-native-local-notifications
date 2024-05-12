@@ -18,7 +18,7 @@ class AppDelegate: RCTAppDelegate {
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    notificationCenter.delegate = self
+    //notificationCenter.delegate = self
     notificationCenter.requestAuthorization(options: [.sound, .badge, .alert]) { granted, error in
       if(granted) {
         print("Notification authorization granted")
@@ -72,10 +72,10 @@ class AppDelegate: RCTAppDelegate {
   
 }
 
-extension AppDelegate: UNUserNotificationCenterDelegate {
-  func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-    let userInfo = response.notification.request.content.userInfo
-    let a = 1
-  }
-  
-}
+//extension AppDelegate: UNUserNotificationCenterDelegate {
+//  func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+//    let userInfo = response.notification.request.content.userInfo
+//    let a = 1
+//  }
+//  
+//}
