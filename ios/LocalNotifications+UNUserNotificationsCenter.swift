@@ -82,7 +82,7 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
         
         // we only care about notifications created through this lib
         if(guuNotification == nil) {
-            if let respondsTo = originalUNCDelegateRespondsTo?.willPresentNotification, respondsTo == true {
+            if let respondsTo = originalUNCDelegateRespondsTo?.willPresentNotification, respondsTo {
                 originalDelegate?.userNotificationCenter?(
                     center, willPresent: notification, withCompletionHandler: completionHandler
                 )
@@ -130,5 +130,51 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
             return
         }
         
+        if(guuNotification != nil) {
+            var eventType = 0;
+            var event: NSMutableDictionary = [:]
+            var eventDetail: NSMutableDictionary = [:]
+            var eventDetailPressAction: NSMutableDictionary = [:]
+            if(response.actionIdentifier == UNNotificationDefaultActionIdentifier) {
+                eventType = 1 // PRESS
+                eventDetailPressAction["id"] = "default"
+            } else {
+                eventType = 2 // ACTION_PRESS
+                eventDetailPressAction["id"] = response.actionIdentifier
+            }
+            
+            eventDetail["notification"] = guuNotification
+            eventDetail["pressAction"] = eventDetailPressAction
+            
+            event["type"] = eventType
+            event["detail"] = eventDetail
+            
+            initialNotification = eventDetail.copy() as? [String : Any]
+            
+            if notificationOpenedAppID != nil && initialNotificationID == notificationOpenedAppID {
+                eventDetail["initialNotification"] = 1
+            }
+            
+            CoreDelegateHolder.instance().didReceiveGuuCoreEvent(event as! [AnyHashable : Any])
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 15) {
+                completionHandler()
+            }
+        } else if (originalDelegate != nil) {
+            if let respondsTo = originalUNCDelegateRespondsTo?.didReceiveNotificationResponse, respondsTo {
+                originalDelegate?.userNotificationCenter?(center, didReceive: response, withCompletionHandler: completionHandler)
+            }
+        }
+    }
+    
+    public func userNotificationCenter(_ center: UNUserNotificationCenter, openSettingsFor notification: UNNotification?) {
+        if(originalDelegate == nil) {
+            return
+        }
+        if #available(iOS 12.0, macOS 10.14, macCatalyst 13.0, *) {
+            if let respondsTo = originalUNCDelegateRespondsTo?.openSettingsForNotification, respondsTo {
+                originalDelegate?.userNotificationCenter?(center, openSettingsFor: notification)
+            }
+        }
     }
 }
