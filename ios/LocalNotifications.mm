@@ -96,7 +96,6 @@ RCT_EXPORT_METHOD(scheduleNotification:
 RCT_EXPORT_METHOD(getInitialNotification:
                   (RCTPromiseResolveBlock) resolve
                   reject: (RCTPromiseRejectBlock) reject) {
-    double a = 1;
     [Core getInitialNotification:^(NSError *_Nullable error, NSDictionary *settings) {
         if(error != nil) {
             reject(@"error", error.description, error);

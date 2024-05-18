@@ -38,9 +38,6 @@ export function scheduleNotification(
 ): Promise<string> {
   const data = {
     ...notification.data,
-    __guulabs_notification: {
-      id: 'lalala',
-    },
   };
   const _notification = { ...notification, data: data };
   return LocalNotifications.scheduleNotification(_notification, trigger);

@@ -9,12 +9,14 @@ import UserNotifications
         scheduleId: String?,
         triggerDate: Date
     ) -> String {
+        let safeScheduleId = scheduleId ?? UUID().uuidString
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
         let data = data?.mutableCopy()
         if data != nil {
             content.userInfo = data as! [AnyHashable : Any]
+            content.userInfo[kGuuUserInfoNotification] = ["id": safeScheduleId]
         }
         content.sound = UNNotificationSound.default
         
@@ -25,7 +27,6 @@ import UserNotifications
             ),
             repeats: false
         )
-        let safeScheduleId = scheduleId ?? UUID().uuidString
         let request = UNNotificationRequest(identifier: safeScheduleId, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request) { error in
             let tag = "[react-native-local-notifications]"
