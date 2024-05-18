@@ -6,7 +6,7 @@ typedef void (^guuLabsMethodNSDictionaryBlock)(NSError *_Nullable, NSDictionary 
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface LocalNotificationsUNUserNotificationCenter : NSObject <UNUserNotificationCenterDelegate>
+@interface LocalNotificationsUNUserNotificationCenter2 : NSObject <UNUserNotificationCenterDelegate>
 
 @property(nonatomic, nullable, weak) id<UNUserNotificationCenterDelegate> originalDelegate;
 

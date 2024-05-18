@@ -3,7 +3,7 @@
 #import "CoreDelegateHolder.h"
 #import "Core.h"
 
-@implementation LocalNotificationsUNUserNotificationCenter
+@implementation LocalNotificationsUNUserNotificationCenter2
 struct {
   unsigned int willPresentNotification : 1;
   unsigned int didReceiveNotificationResponse : 1;

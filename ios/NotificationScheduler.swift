@@ -17,6 +17,7 @@ import UserNotifications
         if data != nil {
             content.userInfo = data as! [AnyHashable : Any]
             content.userInfo[kGuuUserInfoNotification] = ["id": safeScheduleId]
+            content.userInfo[kGuuUserInfoTrigger] = true
         }
         content.sound = UNNotificationSound.default
         

@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 #import "Core+NSNotificationCenter.h"
-#import "LocalNotifications+UNUserNotificationsCenter.h"
+#import "react_native_local_notifications-Swift.h"
 
 @implementation CoreNSNotificationCenter
 
@@ -50,7 +50,6 @@
   [[LocalNotificationsUNUserNotificationCenter instance]
       onDidFinishLaunchingNotification:launchNotification.userInfo];
   [[LocalNotificationsUNUserNotificationCenter instance] getInitialNotification];
-
   [[LocalNotificationsUNUserNotificationCenter instance] observe];
 }
 
