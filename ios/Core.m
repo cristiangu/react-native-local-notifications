@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 #import "Core.h"
-#import "CoreDelegateHolder.h"
 #import "react_native_local_notifications-Swift.h"
 
 @implementation Core
@@ -151,7 +150,7 @@
   return dictionary;
 }
 
-+ (void)getInitialNotification:(guuMethodNSDictionaryBlock)block {
++ (void)getInitialNotification:(guuMethodNSDictionaryBlock) block {
   [LocalNotificationsUNUserNotificationCenter instance].initialNotificationBlock = block;
   [[LocalNotificationsUNUserNotificationCenter instance] getInitialNotification];
 }

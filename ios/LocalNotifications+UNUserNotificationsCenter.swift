@@ -155,7 +155,7 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
                 eventDetail["initialNotification"] = 1
             }
             
-            CoreDelegateHolder.instance().didReceiveGuuCoreEvent(event as! [AnyHashable : Any])
+            CoreDelegateHolder.instance().didReceiveGuuCoreEvent(event as NSDictionary)
             
             DispatchQueue.main.asyncAfter(deadline: .now() + 15) {
                 completionHandler()
