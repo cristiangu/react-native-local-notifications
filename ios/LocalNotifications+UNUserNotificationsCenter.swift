@@ -98,7 +98,7 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
         let foregroundPresentationOptions = ios?["foregroundPresentationOptions"]
         
         let guuTrigger = notification.request.content.userInfo[kGuuUserInfoTrigger] as? Bool
-        if let guuTrigger = guuTrigger {
+        if let _ = guuTrigger {
             // post DELIVERED event
             CoreDelegateHolder.instance().didReceiveGuuCoreEvent(
                 [
@@ -116,7 +116,7 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
         notificationOpenedAppID = guuNotification?["id"] as? String
         
         if(guuNotification == nil) {
-            guuNotification = Core.parseUNNotificationRequest(response.notification.request)
+            guuNotification = CoreGuu.parseUNNotificationRequest(response.notification.request)
         }
         
         if(guuNotification == nil) {

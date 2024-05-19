@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "react_native_local_notifications-Swift.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

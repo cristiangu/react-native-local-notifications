@@ -1,6 +1,5 @@
 import Foundation
 
-
 @objc public class CoreDelegateHolder: NSObject {
     static let shared = { CoreDelegateHolder() }()
     
@@ -37,7 +36,7 @@ import Foundation
     
     @objc public func didReceiveGuuCoreEvent(_ event: NSDictionary) {
         if let repondsTo = self.delegateRespondsTo?.didReceiveNotificationEvent, repondsTo {
-            self.delegate?.didReceiveGuuCoreEvent?(event as! [AnyHashable : Any])
+            self.delegate?.didReceiveGuuCoreEvent?(event)
         } else {
             self.pendingEvents.append(event)
         }

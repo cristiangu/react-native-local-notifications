@@ -1,8 +1,7 @@
 #import "LocalNotifications.h"
 #import <React/RCTUtils.h>
 #import <UIKit/UIKit.h>
-#import "Core.h"
-#import "react_native_local_notifications-Swift.h"
+
 
 static NSString *kReactNativeGuuNotificationEvent = @"app.guulabs.notification-event";
 
@@ -15,55 +14,55 @@ RCT_EXPORT_MODULE()
 NSString *TAG = @"[react-native-local-notifications]";
 
 - (dispatch_queue_t)methodQueue {
-  return dispatch_get_main_queue();
+    return dispatch_get_main_queue();
 }
 
 - (id)init {
-  if (self = [super init]) {
-    pendingCoreEvents = [[NSMutableArray alloc] init];
-    [Core setCoreDelegate: self];
-  }
-  return self;
+    if (self = [super init]) {
+        pendingCoreEvents = [[NSMutableArray alloc] init];
+        [CoreGuu setCoreDelegate: self];
+    }
+    return self;
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-  return @[ kReactNativeGuuNotificationEvent ];
+    return @[ kReactNativeGuuNotificationEvent ];
 }
 
 - (void)startObserving {
-  hasListeners = YES;
-  for (NSDictionary *eventBody in pendingCoreEvents) {
-    [self sendEvent:eventBody];
-  }
-  [pendingCoreEvents removeAllObjects];
+    hasListeners = YES;
+    for (NSDictionary *eventBody in pendingCoreEvents) {
+        [self sendEvent:eventBody];
+    }
+    [pendingCoreEvents removeAllObjects];
 }
 
 - (void)stopObserving {
-  hasListeners = NO;
+    hasListeners = NO;
 }
 
 + (BOOL)requiresMainQueueSetup {
-  return NO;
+    return NO;
 }
 
 - (void)sendEvent:(NSDictionary *_Nonnull)eventBody {
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        if (RCTRunningInAppExtension() ||
-            [UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
-          //[self sendEventWithName:kReactNativeGuuNotificationBackgroundEvent body:eventBody];
-        } else {
-          [self sendEventWithName:kReactNativeGuuNotificationEvent body:eventBody];
-        }
-      });
+    dispatch_after(
+                   dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                       if (RCTRunningInAppExtension() ||
+                           [UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+                           //[self sendEventWithName:kReactNativeGuuNotificationBackgroundEvent body:eventBody];
+                       } else {
+                           [self sendEventWithName:kReactNativeGuuNotificationEvent body:eventBody];
+                       }
+                   });
 }
 
 - (void)didReceiveGuuCoreEvent:(NSDictionary *_Nonnull)event {
-  if (hasListeners) {
-    [self sendEvent:event];
-  } else {
-    [pendingCoreEvents addObject:event];
-  }
+    if (hasListeners) {
+        [self sendEvent:event];
+    } else {
+        [pendingCoreEvents addObject:event];
+    }
 }
 
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -73,13 +72,13 @@ RCT_EXPORT_METHOD(scheduleNotification:
                   resolve: (RCTPromiseResolveBlock) resolve
                   reject: (RCTPromiseRejectBlock) reject)
 {
-
+    
     if(notification.title() == NULL) {
         NSString *message = [NSString stringWithFormat:@"%@ Title prop is missing.", TAG];
         reject(@"error", message, NULL);
         return;
     }
-
+    
     NSString *scheduleId = [NotificationScheduler
                             scheduleNotificationWithTitle: notification.title()
                             body: notification.body()
@@ -87,7 +86,7 @@ RCT_EXPORT_METHOD(scheduleNotification:
                             scheduleId: notification.id_()
                             triggerDate: [NSDate dateWithTimeIntervalSince1970: trigger.timestamp() / 1000]
     ];
-
+    
     resolve(scheduleId);
 }
 
@@ -96,7 +95,7 @@ RCT_EXPORT_METHOD(scheduleNotification:
 RCT_EXPORT_METHOD(getInitialNotification:
                   (RCTPromiseResolveBlock) resolve
                   reject: (RCTPromiseRejectBlock) reject) {
-    [Core getInitialNotification:^(NSError *_Nullable error, NSDictionary *settings) {
+    [CoreGuu getInitialNotification:^(NSError *_Nullable error, NSDictionary *settings) {
         if(error != nil) {
             reject(@"error", error.description, error);
         } else {
@@ -112,21 +111,21 @@ RCT_EXPORT_METHOD(scheduleNotification:
                   resolve: (RCTPromiseResolveBlock) resolve
                   reject: (RCTPromiseRejectBlock) reject)
 {
-
-
+    
+    
     if(notification == NULL || trigger == NULL) {
         NSString *message = [NSString stringWithFormat:@"%@ Missing notification or trigger config.", TAG];
         reject(@"error", message, NULL);
         return;
     }
-
+    
     NSString *title = [notification objectForKey:@"title"];
     if(title == NULL) {
         NSString *message = [NSString stringWithFormat:@"%@ Title prop is missing.", TAG];
         reject(@"error", message, NULL);
         return;
     }
-
+    
     NSString *scheduleId = [NotificationScheduler
                             scheduleNotificationWithTitle: title
                             body: [notification objectForKey:@"body"]
@@ -144,13 +143,13 @@ RCT_EXPORT_METHOD(cancelScheduledNotifications:(NSArray *)ids
                   resolve: (RCTPromiseResolveBlock) resolve
                   reject: (RCTPromiseRejectBlock) reject)
 {
-
+    
     [NotificationScheduler cancelScheduledNotificationsWithScheduleIds:ids];
     resolve(NULL);
 }
 
 - (void)cancelAllScheduledNotifications:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
-
+    
     [NotificationScheduler cancelAllScheduledNotifications];
     resolve(NULL);
 }

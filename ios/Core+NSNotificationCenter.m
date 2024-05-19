@@ -1,6 +1,5 @@
 #import <UIKit/UIKit.h>
 #import "Core+NSNotificationCenter.h"
-#import "react_native_local_notifications-Swift.h"
 
 @implementation CoreNSNotificationCenter
 
