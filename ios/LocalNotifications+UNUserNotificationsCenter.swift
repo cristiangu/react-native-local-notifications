@@ -12,7 +12,6 @@ public typealias GuuLabsMethodNSDictionaryBlock = (Error?, [String: Any]?) -> Vo
     var initialNotification: [String: Any]?
     var initialNotificationGathered: Bool = false
     @objc public var initialNotificationBlock: GuuLabsMethodNSDictionaryBlock?
-    var initialNotificationID: String? = nil
     var notificationOpenedAppID: String? = nil
     
     // the instance class method can be reached from ObjC.
@@ -39,18 +38,14 @@ public typealias GuuLabsMethodNSDictionaryBlock = (Error?, [String: Any]?) -> Vo
     }
     
     
-    @objc public func onDidFinishLaunchingNotification(_ notifUserInfo: [AnyHashable : Any]?) {
-        if let notifUserInfo {
-            let guuNotification = notifUserInfo[kGuuUserInfoNotification] as? [AnyHashable : Any]
-            self.initialNotificationID = guuNotification?["id"] as? String
-        }
+    @objc public func onDidFinishLaunchingNotification() {
         initialNotificationGathered = true
     }
     
     @objc public func getInitialNotification() -> [AnyHashable : Any]? {
         if initialNotificationGathered && initialNotificationBlock != nil {
             // copying initial notification
-            if initialNotification != nil && (initialNotificationID == notificationOpenedAppID) {
+            if initialNotification != nil {
                 let initialNotificationCopy = initialNotification
                 initialNotification = nil
                 initialNotificationBlock?(nil, initialNotificationCopy)
@@ -132,9 +127,9 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
         
         if(guuNotification != nil) {
             var eventType = 0;
-            var event: NSMutableDictionary = [:]
-            var eventDetail: NSMutableDictionary = [:]
-            var eventDetailPressAction: NSMutableDictionary = [:]
+            let event: NSMutableDictionary = [:]
+            let eventDetail: NSMutableDictionary = [:]
+            let eventDetailPressAction: NSMutableDictionary = [:]
             if(response.actionIdentifier == UNNotificationDefaultActionIdentifier) {
                 eventType = 1 // PRESS
                 eventDetailPressAction["id"] = "default"
@@ -151,7 +146,7 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
             
             initialNotification = eventDetail.copy() as? [String : Any]
             
-            if notificationOpenedAppID != nil && initialNotificationID == notificationOpenedAppID {
+            if notificationOpenedAppID != nil {
                 eventDetail["initialNotification"] = 1
             }
             

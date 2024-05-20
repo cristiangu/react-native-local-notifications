@@ -22,8 +22,8 @@ import Foundation
                     self.pendingEvents.forEach { event in
                         self.didReceiveGuuCoreEvent(event)
                     }
+                    self.pendingEvents = []
                 }
-                pendingEvents = []
             }
             _delegate = newValue
             
@@ -36,7 +36,7 @@ import Foundation
     
     @objc public func didReceiveGuuCoreEvent(_ event: NSDictionary) {
         if let repondsTo = self.delegateRespondsTo?.didReceiveNotificationEvent, repondsTo {
-            self.delegate?.didReceiveGuuCoreEvent?(event)
+            self.delegate?.didReceiveGuuCoreEvent?(event as! [AnyHashable : Any])
         } else {
             self.pendingEvents.append(event)
         }

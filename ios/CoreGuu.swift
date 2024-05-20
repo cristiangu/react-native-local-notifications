@@ -1,4 +1,5 @@
 import Foundation
+import UserNotifications
 
 public typealias guuMethodNSDictionaryBlock = ((any Error)?, [AnyHashable : Any]?) -> Void
 
@@ -11,9 +12,9 @@ enum CoreEventType : Int {
     case triggerNotificationCreated = 7
 }
 
-@objc public protocol CoreDelegate: NSObjectProtocol {
-    @objc optional func didReceiveGuuCoreEvent(_ event: NSDictionary)
-}
+//@objc public protocol CoreDelegate: NSObjectProtocol {
+//    @objc optional func didReceiveGuuCoreEvent(_ event: NSDictionary)
+//}
 
 
 @objc public class CoreGuu: NSObject {
