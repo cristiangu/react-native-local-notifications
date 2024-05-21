@@ -1,7 +1,7 @@
 import Foundation
 import UserNotifications
 
-public typealias GuuLabsMethodNSDictionaryBlock = (Error?, [String: Any]?) -> Void
+public typealias GuuLabsMethodNSDictionaryBlock = (Error?, [AnyHashable: Any]?) -> Void
 
 @objc public class LocalNotificationsUNUserNotificationCenter: NSObject {
     static let shared = { LocalNotificationsUNUserNotificationCenter() }()
@@ -9,12 +9,6 @@ public typealias GuuLabsMethodNSDictionaryBlock = (Error?, [String: Any]?) -> Vo
     
     var originalUNCDelegateRespondsTo: (willPresentNotification: Bool, didReceiveNotificationResponse: Bool, openSettingsForNotification: Bool)? = nil
     
-    var initialNotification: [String: Any]?
-    var initialNotificationGathered: Bool = false
-    @objc public var initialNotificationBlock: GuuLabsMethodNSDictionaryBlock?
-    var notificationOpenedAppID: String? = nil
-    
-    // the instance class method can be reached from ObjC.
     @objc public class func instance() -> LocalNotificationsUNUserNotificationCenter {
         return LocalNotificationsUNUserNotificationCenter.shared
     }
@@ -36,28 +30,6 @@ public typealias GuuLabsMethodNSDictionaryBlock = (Error?, [String: Any]?) -> Vo
         }
         center.delegate = self
     }
-    
-    
-    @objc public func onDidFinishLaunchingNotification() {
-        initialNotificationGathered = true
-    }
-    
-    @objc public func getInitialNotification() -> [AnyHashable : Any]? {
-        if initialNotificationGathered && initialNotificationBlock != nil {
-            // copying initial notification
-            if initialNotification != nil {
-                let initialNotificationCopy = initialNotification
-                initialNotification = nil
-                initialNotificationBlock?(nil, initialNotificationCopy)
-            } else {
-                initialNotificationBlock?(nil, nil)
-            }
-            initialNotificationBlock = nil
-        }
-        return nil
-    }
-    
-    
     
 }
 
@@ -85,17 +57,14 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
             return
         }
         
-        
-        notificationOpenedAppID = guuNotification?["id"] as? String
         let ios = guuNotification?["ios"] as? [AnyHashable: Any]
         
-        var presentationOptions: UNNotificationPresentationOptions = []
-        let foregroundPresentationOptions = ios?["foregroundPresentationOptions"]
+        let presentationOptions: UNNotificationPresentationOptions = []
         
         let guuTrigger = notification.request.content.userInfo[kGuuUserInfoTrigger] as? Bool
         if let _ = guuTrigger {
             // post DELIVERED event
-            CoreDelegateHolder.instance().didReceiveGuuCoreEvent(
+            CoreDelegateHolder.shared.didReceiveGuuCoreEvent(
                 [
                     "type": CoreEventType.delivered.rawValue,
                     "detail": [
@@ -108,20 +77,20 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
     
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         var guuNotification = response.notification.request.content.userInfo[kGuuUserInfoNotification] as? [AnyHashable : Any]
-        notificationOpenedAppID = guuNotification?["id"] as? String
         
         if(guuNotification == nil) {
             guuNotification = CoreGuu.parseUNNotificationRequest(response.notification.request)
         }
         
         if(guuNotification == nil) {
-            CoreDelegateHolder.instance().didReceiveGuuCoreEvent(
+            CoreDelegateHolder.shared.didReceiveGuuCoreEvent(
                 [
                     "type": CoreEventType.dismissed.rawValue,
                     "detail": [
                         "notification": guuNotification,
                     ]
                 ])
+            completionHandler()
             return
         }
         
@@ -144,17 +113,9 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
             event["type"] = eventType
             event["detail"] = eventDetail
             
-            initialNotification = eventDetail.copy() as? [String : Any]
+            CoreDelegateHolder.shared.didReceiveGuuCoreEvent(event as NSDictionary)
             
-            if notificationOpenedAppID != nil {
-                eventDetail["initialNotification"] = 1
-            }
-            
-            CoreDelegateHolder.instance().didReceiveGuuCoreEvent(event as NSDictionary)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 15) {
-                completionHandler()
-            }
+            completionHandler()
         } else if (originalDelegate != nil) {
             if let respondsTo = originalUNCDelegateRespondsTo?.didReceiveNotificationResponse, respondsTo {
                 originalDelegate?.userNotificationCenter?(center, didReceive: response, withCompletionHandler: completionHandler)

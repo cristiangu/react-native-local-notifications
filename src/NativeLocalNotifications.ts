@@ -60,8 +60,6 @@ export interface Spec extends TurboModule {
 
   addListener: (eventType: string) => void;
   removeListeners: (count: number) => void;
-
-  getInitialNotification(): Promise<Notification | null>;
 }
 
 export default TurboModuleRegistry.getEnforcing<Spec>('LocalNotifications');

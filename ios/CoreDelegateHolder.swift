@@ -30,10 +30,6 @@ import Foundation
         }
     }
     
-    @objc public class func instance() -> CoreDelegateHolder {
-        return CoreDelegateHolder.shared
-    }
-    
     @objc public func didReceiveGuuCoreEvent(_ event: NSDictionary) {
         if let repondsTo = self.delegateRespondsTo?.didReceiveNotificationEvent, repondsTo {
             self.delegate?.didReceiveGuuCoreEvent?(event as! [AnyHashable : Any])

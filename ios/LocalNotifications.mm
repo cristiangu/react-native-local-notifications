@@ -91,20 +91,6 @@ RCT_EXPORT_METHOD(scheduleNotification:
     resolve(scheduleId);
 }
 
-
-
-RCT_EXPORT_METHOD(getInitialNotification:
-                  (RCTPromiseResolveBlock) resolve
-                  reject: (RCTPromiseRejectBlock) reject) {
-    [CoreGuu getInitialNotification:^(NSError *_Nullable error, NSDictionary *settings) {
-        if(error != nil) {
-            reject(@"error", error.description, error);
-        } else {
-            resolve(settings);
-        }
-    }];
-}
-
 #else
 RCT_EXPORT_METHOD(scheduleNotification:
                   (NSDictionary *)notification

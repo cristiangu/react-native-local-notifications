@@ -74,7 +74,3 @@ export function onForegroundEvent(
     subscription.remove();
   };
 }
-
-export function getInitialNotification(): Promise<Notification | null> {
-  return LocalNotifications.getInitialNotification();
-}

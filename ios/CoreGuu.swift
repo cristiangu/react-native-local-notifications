@@ -16,11 +16,10 @@ enum CoreEventType : Int {
 //    @objc optional func didReceiveGuuCoreEvent(_ event: NSDictionary)
 //}
 
-
 @objc public class CoreGuu: NSObject {
     
     @objc public class func setCoreDelegate(_ coreDelegate: (any CoreDelegate)?) {
-        CoreDelegateHolder.instance().delegate = coreDelegate
+        CoreDelegateHolder.shared.delegate = coreDelegate
     }
     
     @objc public static func parseDataFromUserInfo(_ userInfo: [String: Any]) -> [String: Any] {
@@ -88,11 +87,6 @@ enum CoreEventType : Int {
         dictionary["data"] = parseDataFromUserInfo(userInfo as? [String: Any] ?? [:])
         
         return dictionary
-    }
-    
-    @objc public static func getInitialNotification(_ block: @escaping guuMethodNSDictionaryBlock) {
-        LocalNotificationsUNUserNotificationCenter.instance().initialNotificationBlock = block
-        LocalNotificationsUNUserNotificationCenter.instance().getInitialNotification()
     }
     
 }
