@@ -1,6 +1,14 @@
 import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
+export interface IOSForegroundPresentationOptions {
+  alert?: boolean;
+}
+
+export interface NotificationiOS {
+  foregroundPresentationOptions?: IOSForegroundPresentationOptions;
+}
+
 export interface NotificationAndroid {
   smallIcon?: string;
   color?: string;
@@ -41,6 +49,8 @@ export interface Notification {
   data?: { [key: string]: string | object | number };
 
   android?: NotificationAndroid;
+
+  ios?: NotificationiOS;
 }
 export interface NotificationTrigger {
   /**

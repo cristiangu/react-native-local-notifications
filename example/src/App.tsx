@@ -30,6 +30,11 @@ export default function App() {
         data: {
           key: 'value',
         },
+        ios: {
+          foregroundPresentationOptions: {
+            alert: true,
+          },
+        },
       },
       {
         timestamp: Date.now() + 5000,

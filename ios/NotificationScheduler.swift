@@ -7,7 +7,8 @@ import UserNotifications
         body: String,
         data: NSMutableDictionary?,
         scheduleId: String?,
-        triggerDate: Date
+        triggerDate: Date,
+        showForegroundAlert: Bool
     ) -> String {
         let safeScheduleId = scheduleId ?? UUID().uuidString
         let content = UNMutableNotificationContent()
@@ -16,7 +17,14 @@ import UserNotifications
         let data = data?.mutableCopy()
         if data != nil {
             content.userInfo = data as! [AnyHashable : Any]
-            content.userInfo[kGuuUserInfoNotification] = ["id": safeScheduleId]
+            content.userInfo[kGuuUserInfoNotification] = [
+                "id": safeScheduleId,
+                "ios": [
+                    "foregroundPresentationOptions": [
+                        "alert": showForegroundAlert
+                    ]
+                ]
+            ]
             content.userInfo[kGuuUserInfoTrigger] = true
         }
         content.sound = UNNotificationSound.default

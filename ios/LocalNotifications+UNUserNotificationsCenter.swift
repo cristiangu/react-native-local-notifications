@@ -1,8 +1,6 @@
 import Foundation
 import UserNotifications
 
-public typealias GuuLabsMethodNSDictionaryBlock = (Error?, [AnyHashable: Any]?) -> Void
-
 @objc public class LocalNotificationsUNUserNotificationCenter: NSObject {
     static let shared = { LocalNotificationsUNUserNotificationCenter() }()
     weak var originalDelegate: UNUserNotificationCenterDelegate?
@@ -45,10 +43,8 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
     // notification is otherwise visible to the user.
     public func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         
-        let guuNotification = notification.request.content.userInfo[kGuuUserInfoNotification] as? [AnyHashable : Any]
-        
         // we only care about notifications created through this lib
-        if(guuNotification == nil) {
+        guard let guuNotification = notification.request.content.userInfo[kGuuUserInfoNotification] as? [AnyHashable : Any] else {
             if let respondsTo = originalUNCDelegateRespondsTo?.willPresentNotification, respondsTo {
                 originalDelegate?.userNotificationCenter?(
                     center, willPresent: notification, withCompletionHandler: completionHandler
@@ -57,9 +53,15 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
             return
         }
         
-        let ios = guuNotification?["ios"] as? [AnyHashable: Any]
+        let notificationDict = CoreGuu.parseUNNotificationRequest(notification.request)
         
-        let presentationOptions: UNNotificationPresentationOptions = []
+        let foregroundPresentationOptions = (guuNotification["ios"] as? [String: Any])?["foregroundPresentationOptions"] as? [String: Any];
+        let alert = (foregroundPresentationOptions?["alert"] as? Bool) ?? false
+        var presentationOptions: UNNotificationPresentationOptions = []
+        if(alert) {
+            presentationOptions.insert(UNNotificationPresentationOptions.alert)
+        }
+        
         
         let guuTrigger = notification.request.content.userInfo[kGuuUserInfoTrigger] as? Bool
         if let _ = guuTrigger {
@@ -68,7 +70,7 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
                 [
                     "type": CoreEventType.delivered.rawValue,
                     "detail": [
-                        "notification": guuNotification,
+                        "notification": notificationDict,
                     ]
                 ])
         }

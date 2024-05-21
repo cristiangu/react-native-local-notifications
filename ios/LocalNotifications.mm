@@ -80,12 +80,22 @@ RCT_EXPORT_METHOD(scheduleNotification:
         return;
     }
     
+    BOOL showForegroundAlert = NO;
+    if(
+       notification.ios().has_value() &&
+       notification.ios().value().foregroundPresentationOptions().has_value() &&
+       notification.ios().value().foregroundPresentationOptions().value().alert().has_value()) {
+           showForegroundAlert = notification.ios().value().foregroundPresentationOptions().value().alert().value();
+           
+           
+       }
     NSString *scheduleId = [NotificationScheduler
                             scheduleNotificationWithTitle: notification.title()
                             body: notification.body()
                             data: (NSMutableDictionary * _Nullable) notification.data()
                             scheduleId: notification.id_()
                             triggerDate: [NSDate dateWithTimeIntervalSince1970: trigger.timestamp() / 1000]
+                            showForegroundAlert: showForegroundAlert
     ];
     
     resolve(scheduleId);
