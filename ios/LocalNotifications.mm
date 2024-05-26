@@ -1,11 +1,70 @@
 #import "LocalNotifications.h"
+#import <React/RCTUtils.h>
+#import <UIKit/UIKit.h>
+#import "UserNotifications/UserNotifications.h"
 #import "react_native_local_notifications-Swift.h"
 
-@implementation LocalNotifications
+static NSString *kReactNativeGuuNotificationEvent = @"app.guulabs.notification-event";
+
+@implementation LocalNotifications {
+    bool hasListeners;
+    NSMutableArray *pendingCoreEvents;
+}
 RCT_EXPORT_MODULE()
 
-
 NSString *TAG = @"[react-native-local-notifications]";
+
+- (dispatch_queue_t)methodQueue {
+    return dispatch_get_main_queue();
+}
+
+- (id)init {
+    if (self = [super init]) {
+        pendingCoreEvents = [[NSMutableArray alloc] init];
+        [CoreGuu setCoreDelegate: self];
+    }
+    return self;
+}
+
+- (NSArray<NSString *> *)supportedEvents {
+    return @[ kReactNativeGuuNotificationEvent ];
+}
+
+- (void)startObserving {
+    hasListeners = YES;
+    for (NSDictionary *eventBody in pendingCoreEvents) {
+        [self sendEvent:eventBody];
+    }
+    [pendingCoreEvents removeAllObjects];
+}
+
+- (void)stopObserving {
+    hasListeners = NO;
+}
+
++ (BOOL)requiresMainQueueSetup {
+    return NO;
+}
+
+- (void)sendEvent:(NSDictionary *_Nonnull)eventBody {
+    dispatch_after(
+                   dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                       if (RCTRunningInAppExtension() ||
+                           [UIApplication sharedApplication].applicationState == UIApplicationStateBackground) {
+                           //[self sendEventWithName:kReactNativeGuuNotificationBackgroundEvent body:eventBody];
+                       } else {
+                           [self sendEventWithName:kReactNativeGuuNotificationEvent body:eventBody];
+                       }
+                   });
+}
+
+- (void)didReceiveGuuCoreEvent:(NSDictionary *_Nonnull)event {
+    if (hasListeners) {
+        [self sendEvent:event];
+    } else {
+        [pendingCoreEvents addObject:event];
+    }
+}
 
 #ifdef RCT_NEW_ARCH_ENABLED
 RCT_EXPORT_METHOD(scheduleNotification:
@@ -21,12 +80,22 @@ RCT_EXPORT_METHOD(scheduleNotification:
         return;
     }
     
+    BOOL showForegroundAlert = NO;
+    if(
+       notification.ios().has_value() &&
+       notification.ios().value().foregroundPresentationOptions().has_value() &&
+       notification.ios().value().foregroundPresentationOptions().value().alert().has_value()) {
+           showForegroundAlert = notification.ios().value().foregroundPresentationOptions().value().alert().value();
+           
+           
+       }
     NSString *scheduleId = [NotificationScheduler
                             scheduleNotificationWithTitle: notification.title()
                             body: notification.body()
                             data: (NSMutableDictionary * _Nullable) notification.data()
                             scheduleId: notification.id_()
                             triggerDate: [NSDate dateWithTimeIntervalSince1970: trigger.timestamp() / 1000]
+                            showForegroundAlert: showForegroundAlert
     ];
     
     resolve(scheduleId);
@@ -53,6 +122,7 @@ RCT_EXPORT_METHOD(scheduleNotification:
         reject(@"error", message, NULL);
         return;
     }
+    BOOL showForegroundAlert = [[[notification objectForKey:@"ios"] objectForKey:@"foregroundPresentationOptions"] objectForKey:@"alert"];
     
     NSString *scheduleId = [NotificationScheduler
                             scheduleNotificationWithTitle: title
@@ -62,6 +132,7 @@ RCT_EXPORT_METHOD(scheduleNotification:
                             triggerDate: [NSDate dateWithTimeIntervalSince1970:
                                               [[trigger valueForKey:@"timestamp"] longValue] / 1000
                                          ]
+                            showForegroundAlert: showForegroundAlert
     ];
     resolve(scheduleId);
 }
@@ -76,7 +147,10 @@ RCT_EXPORT_METHOD(cancelScheduledNotifications:(NSArray *)ids
     resolve(NULL);
 }
 
-- (void)cancelAllScheduledNotifications:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(cancelAllScheduledNotifications:
+                  (RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
     
     [NotificationScheduler cancelAllScheduledNotifications];
     resolve(NULL);
@@ -92,5 +166,7 @@ RCT_EXPORT_METHOD(cancelScheduledNotifications:(NSArray *)ids
     return std::make_shared<facebook::react::NativeLocalNotificationsSpecJSI>(params);
 }
 #endif
+
+
 
 @end

@@ -1,14 +1,22 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { StyleSheet, View, Button } from 'react-native';
 import {
   scheduleNotification,
   cancelScheduledNotifications,
   cancelAllScheduledNotifications,
+  onNotificationEvent,
 } from '@guulabs/react-native-local-notifications';
 
 export default function App() {
   const [ids, setIds] = useState<string[]>([]);
+
+  useEffect(() => {
+    // @ts-expect-error
+    onNotificationEvent(({ type, detail }) => {
+      console.log('Aaaaa:', type, detail);
+    });
+  }, []);
 
   const onPress = useCallback(async () => {
     const id = await scheduleNotification(
@@ -21,6 +29,11 @@ export default function App() {
         },
         data: {
           key: 'value',
+        },
+        ios: {
+          foregroundPresentationOptions: {
+            alert: true,
+          },
         },
       },
       {
