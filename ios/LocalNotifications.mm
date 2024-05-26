@@ -1,7 +1,8 @@
 #import "LocalNotifications.h"
 #import <React/RCTUtils.h>
 #import <UIKit/UIKit.h>
-
+#import "UserNotifications/UserNotifications.h"
+#import "react_native_local_notifications-Swift.h"
 
 static NSString *kReactNativeGuuNotificationEvent = @"app.guulabs.notification-event";
 

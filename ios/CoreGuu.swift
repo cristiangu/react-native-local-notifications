@@ -10,9 +10,9 @@ enum CoreEventType : Int {
     case delivered = 3
 }
 
-@objc public protocol CoreDelegate: NSObjectProtocol {
-    @objc optional func didReceiveGuuCoreEvent(_ event: NSDictionary)
-}
+//@objc public protocol CoreDelegate: NSObjectProtocol {
+//    @objc optional func didReceiveGuuCoreEvent(_ event: NSDictionary)
+//}
 
 @objc public class CoreGuu: NSObject {
     
