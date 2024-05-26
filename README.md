@@ -62,7 +62,7 @@ await cancelScheduledNotifications([id, "another_id1", "another_id2"]);
 await cancelAllScheduledNotifications();
 ```
 ## iOS
-Decide if the app should display [a banner](https://developer.apple.com/documentation/usernotifications/unnotificationpresentationoptions/banner) for a foreground notification.
+Display [a notification banner](https://developer.apple.com/documentation/usernotifications/unnotificationpresentationoptions/banner) for foreground notifications.
 ```js
 const id = await scheduleNotification(
   {
@@ -108,6 +108,7 @@ const id = await scheduleNotification(
 |------------|----------------------------------------------|--------------------------------|----------------------------------------------------------------------------------------------------------|
 | title      | `string`                                     |    -                           | Title of the local notification.       |
 | body       | `string`                                     |    -                           |  The body for the local notification.  |
+| ios        | `foregroundPresentationOptions: { banner: bool }` | `foregroundPresentationOptions: { banner: true }` | Show a [notification banner](https://developer.apple.com/documentation/usernotifications/unnotificationpresentationoptions/banner) for the notification events dispatched while the app is in foreground |
 | android    | ` { smallIcon: string, color: string } `     | `{ smallIcon: 'ic_launcher' }` | Use `smallIcon` to set a custom resource name (drawable or mipmap) for the notification icon on Android. </br> Use `color` to set a hex accent color for the notification on Android. |
 | timestamp  | `number`                                     |    -                           | The date in milliseconds when the local notfication should be dispatched. |
 
