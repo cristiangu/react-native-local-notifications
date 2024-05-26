@@ -73,21 +73,21 @@ RCT_EXPORT_METHOD(scheduleNotification:
                   resolve: (RCTPromiseResolveBlock) resolve
                   reject: (RCTPromiseRejectBlock) reject)
 {
-    
+
     if(notification.title() == NULL) {
         NSString *message = [NSString stringWithFormat:@"%@ Title prop is missing.", TAG];
         reject(@"error", message, NULL);
         return;
     }
-    
-    BOOL showForegroundAlert = NO;
+
+    BOOL showForegroundBanner = NO;
     if(
        notification.ios().has_value() &&
        notification.ios().value().foregroundPresentationOptions().has_value() &&
-       notification.ios().value().foregroundPresentationOptions().value().alert().has_value()) {
-           showForegroundAlert = notification.ios().value().foregroundPresentationOptions().value().alert().value();
-           
-           
+       notification.ios().value().foregroundPresentationOptions().value().banner().has_value()) {
+           showForegroundBanner = notification.ios().value().foregroundPresentationOptions().value().banner().value();
+
+
        }
     NSString *scheduleId = [NotificationScheduler
                             scheduleNotificationWithTitle: notification.title()
@@ -95,9 +95,9 @@ RCT_EXPORT_METHOD(scheduleNotification:
                             data: (NSMutableDictionary * _Nullable) notification.data()
                             scheduleId: notification.id_()
                             triggerDate: [NSDate dateWithTimeIntervalSince1970: trigger.timestamp() / 1000]
-                            showForegroundAlert: showForegroundAlert
+                            showForegroundBanner: showForegroundBanner
     ];
-    
+
     resolve(scheduleId);
 }
 
@@ -108,22 +108,22 @@ RCT_EXPORT_METHOD(scheduleNotification:
                   resolve: (RCTPromiseResolveBlock) resolve
                   reject: (RCTPromiseRejectBlock) reject)
 {
-    
-    
+
+
     if(notification == NULL || trigger == NULL) {
         NSString *message = [NSString stringWithFormat:@"%@ Missing notification or trigger config.", TAG];
         reject(@"error", message, NULL);
         return;
     }
-    
+
     NSString *title = [notification objectForKey:@"title"];
     if(title == NULL) {
         NSString *message = [NSString stringWithFormat:@"%@ Title prop is missing.", TAG];
         reject(@"error", message, NULL);
         return;
     }
-    BOOL showForegroundAlert = [[[notification objectForKey:@"ios"] objectForKey:@"foregroundPresentationOptions"] objectForKey:@"alert"];
-    
+    BOOL showForegroundBanner = [[[notification objectForKey:@"ios"] objectForKey:@"foregroundPresentationOptions"] objectForKey:@"banner"];
+
     NSString *scheduleId = [NotificationScheduler
                             scheduleNotificationWithTitle: title
                             body: [notification objectForKey:@"body"]
@@ -132,7 +132,7 @@ RCT_EXPORT_METHOD(scheduleNotification:
                             triggerDate: [NSDate dateWithTimeIntervalSince1970:
                                               [[trigger valueForKey:@"timestamp"] longValue] / 1000
                                          ]
-                            showForegroundAlert: showForegroundAlert
+                            showForegroundBanner: showForegroundBanner
     ];
     resolve(scheduleId);
 }
@@ -142,7 +142,7 @@ RCT_EXPORT_METHOD(cancelScheduledNotifications:(NSArray *)ids
                   resolve: (RCTPromiseResolveBlock) resolve
                   reject: (RCTPromiseRejectBlock) reject)
 {
-    
+
     [NotificationScheduler cancelScheduledNotificationsWithScheduleIds:ids];
     resolve(NULL);
 }
@@ -151,7 +151,7 @@ RCT_EXPORT_METHOD(cancelAllScheduledNotifications:
                   (RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
-    
+
     [NotificationScheduler cancelAllScheduledNotifications];
     resolve(NULL);
 }

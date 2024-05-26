@@ -2,7 +2,7 @@ import type { TurboModule } from 'react-native';
 import { TurboModuleRegistry } from 'react-native';
 
 export interface IOSForegroundPresentationOptions {
-  alert?: boolean;
+  banner?: boolean;
 }
 
 export interface NotificationiOS {

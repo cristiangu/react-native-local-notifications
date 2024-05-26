@@ -51,8 +51,18 @@ export function cancelAllScheduledNotifications(): Promise<string> {
   return LocalNotifications.cancelAllScheduledNotifications();
 }
 
+export type NotificationEvent = Event & {
+  type:
+    | 'notificationPressed'
+    | 'notificationActionPressed'
+    | 'notificationDelivered';
+  detail: {
+    notification: Notification;
+  };
+};
+
 export function onNotificationEvent(
-  observer: (event: Event) => void
+  observer: (event: NotificationEvent) => void
 ): () => void {
   if (!isFunction(observer)) {
     throw new Error(
