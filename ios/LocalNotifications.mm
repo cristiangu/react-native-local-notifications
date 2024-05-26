@@ -147,7 +147,10 @@ RCT_EXPORT_METHOD(cancelScheduledNotifications:(NSArray *)ids
     resolve(NULL);
 }
 
-- (void)cancelAllScheduledNotifications:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject {
+RCT_EXPORT_METHOD(cancelAllScheduledNotifications:
+                  (RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
+{
     
     [NotificationScheduler cancelAllScheduledNotifications];
     resolve(NULL);
