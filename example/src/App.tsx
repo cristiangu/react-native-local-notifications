@@ -5,7 +5,7 @@ import {
   scheduleNotification,
   cancelScheduledNotifications,
   cancelAllScheduledNotifications,
-  onForegroundEvent,
+  onNotificationEvent,
 } from '@guulabs/react-native-local-notifications';
 
 export default function App() {
@@ -13,7 +13,7 @@ export default function App() {
 
   useEffect(() => {
     // @ts-expect-error
-    onForegroundEvent(({ type, detail }) => {
+    onNotificationEvent(({ type, detail }) => {
       console.log('Aaaaa:', type, detail);
     });
   }, []);

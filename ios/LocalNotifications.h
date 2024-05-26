@@ -1,6 +1,7 @@
 
 #import <React/RCTEventEmitter.h>
-#import "CoreInit+Load.h"
+#import "UserNotifications/UserNotifications.h"
+#import "react_native_local_notifications-Swift.h"
 
 #ifdef RCT_NEW_ARCH_ENABLED
 #import "RNLocalNotificationsSpec.h"

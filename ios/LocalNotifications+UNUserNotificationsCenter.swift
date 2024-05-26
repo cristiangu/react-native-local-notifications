@@ -53,8 +53,6 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
             return
         }
         
-        let notificationDict = CoreGuu.parseUNNotificationRequest(notification.request)
-        
         let foregroundPresentationOptions = (guuNotification["ios"] as? [String: Any])?["foregroundPresentationOptions"] as? [String: Any];
         let alert = (foregroundPresentationOptions?["alert"] as? Bool) ?? false
         var presentationOptions: UNNotificationPresentationOptions = []
@@ -62,10 +60,10 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
             presentationOptions.insert(UNNotificationPresentationOptions.alert)
         }
         
-        
         let guuTrigger = notification.request.content.userInfo[kGuuUserInfoTrigger] as? Bool
         if let _ = guuTrigger {
             // post DELIVERED event
+            let notificationDict = CoreGuu.parseUNNotificationRequest(notification.request)
             CoreDelegateHolder.shared.didReceiveGuuCoreEvent(
                 [
                     "type": CoreEventType.delivered.rawValue,
@@ -78,51 +76,34 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
     }
     
     public func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        var guuNotification = response.notification.request.content.userInfo[kGuuUserInfoNotification] as? [AnyHashable : Any]
-        
-        if(guuNotification == nil) {
-            guuNotification = CoreGuu.parseUNNotificationRequest(response.notification.request)
-        }
-        
-        if(guuNotification == nil) {
-            CoreDelegateHolder.shared.didReceiveGuuCoreEvent(
-                [
-                    "type": CoreEventType.dismissed.rawValue,
-                    "detail": [
-                        "notification": guuNotification,
-                    ]
-                ])
-            completionHandler()
-            return
-        }
-        
-        if(guuNotification != nil) {
-            var eventType = 0;
-            let event: NSMutableDictionary = [:]
-            let eventDetail: NSMutableDictionary = [:]
-            let eventDetailPressAction: NSMutableDictionary = [:]
-            if(response.actionIdentifier == UNNotificationDefaultActionIdentifier) {
-                eventType = 1 // PRESS
-                eventDetailPressAction["id"] = "default"
-            } else {
-                eventType = 2 // ACTION_PRESS
-                eventDetailPressAction["id"] = response.actionIdentifier
-            }
-            
-            eventDetail["notification"] = guuNotification
-            eventDetail["pressAction"] = eventDetailPressAction
-            
-            event["type"] = eventType
-            event["detail"] = eventDetail
-            
-            CoreDelegateHolder.shared.didReceiveGuuCoreEvent(event as NSDictionary)
-            
-            completionHandler()
-        } else if (originalDelegate != nil) {
+        guard let _ = response.notification.request.content.userInfo[kGuuUserInfoNotification] else {
             if let respondsTo = originalUNCDelegateRespondsTo?.didReceiveNotificationResponse, respondsTo {
                 originalDelegate?.userNotificationCenter?(center, didReceive: response, withCompletionHandler: completionHandler)
             }
+            return
         }
+        
+        var eventType = -1;
+        let event: NSMutableDictionary = [:]
+        let eventDetail: NSMutableDictionary = [:]
+        let eventDetailPressAction: NSMutableDictionary = [:]
+        if(response.actionIdentifier == UNNotificationDefaultActionIdentifier) {
+            eventType = CoreEventType.pressed.rawValue
+            eventDetailPressAction["id"] = "default"
+        } else {
+            eventType = CoreEventType.actionPressed.rawValue
+            eventDetailPressAction["id"] = response.actionIdentifier
+        }
+        
+        let notificationDict = CoreGuu.parseUNNotificationRequest(response.notification.request)
+        eventDetail["notification"] = notificationDict
+        eventDetail["pressAction"] = eventDetailPressAction
+        
+        event["type"] = eventType
+        event["detail"] = eventDetail
+        
+        CoreDelegateHolder.shared.didReceiveGuuCoreEvent(event as NSDictionary)
+        completionHandler()
     }
     
     public func userNotificationCenter(_ center: UNUserNotificationCenter, openSettingsFor notification: UNNotification?) {

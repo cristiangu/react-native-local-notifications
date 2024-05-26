@@ -1,20 +1,18 @@
 import Foundation
 import UserNotifications
 
-public typealias guuMethodNSDictionaryBlock = ((any Error)?, [AnyHashable : Any]?) -> Void
-
 let kGuuUserInfoNotification = "__guulabs_notification"
 let kGuuUserInfoTrigger = "__guulabs_trigger"
 
 enum CoreEventType : Int {
-    case dismissed = 0
+    case pressed = 1
+    case actionPressed = 2
     case delivered = 3
-    case triggerNotificationCreated = 7
 }
 
-//@objc public protocol CoreDelegate: NSObjectProtocol {
-//    @objc optional func didReceiveGuuCoreEvent(_ event: NSDictionary)
-//}
+@objc public protocol CoreDelegate: NSObjectProtocol {
+    @objc optional func didReceiveGuuCoreEvent(_ event: NSDictionary)
+}
 
 @objc public class CoreGuu: NSObject {
     
@@ -22,7 +20,7 @@ enum CoreEventType : Int {
         CoreDelegateHolder.shared.delegate = coreDelegate
     }
     
-    @objc public static func parseDataFromUserInfo(_ userInfo: [String: Any]) -> [String: Any] {
+    static func parseDataFromUserInfo(_ userInfo: [String: Any]) -> [String: Any] {
         var data = [String: Any]()
         for (key, value) in userInfo {
             // build data dict from remaining keys but skip keys that shouldn't be included in data
@@ -30,7 +28,9 @@ enum CoreEventType : Int {
                 // guu or guu_options
                 key.hasPrefix("guu") ||
                 // fcm_options
-                key.hasPrefix("fcm") {
+                key.hasPrefix("fcm") ||
+                key == kGuuUserInfoTrigger ||
+                key == kGuuUserInfoNotification {
                 continue
             }
             data[key] = value
@@ -38,7 +38,7 @@ enum CoreEventType : Int {
         return data
     }
     
-    @objc public static func parseUNNotificationContent(content: UNNotificationContent) -> [String: Any] {
+   static func parseUNNotificationContent(content: UNNotificationContent) -> [String: Any] {
         var dictionary = [String: Any]()
         var iosDict = [String: Any]()
         
@@ -61,7 +61,7 @@ enum CoreEventType : Int {
         return dictionary
     }
     
-    @objc public static func parseUNNotificationRequest(_ request: UNNotificationRequest) -> [String: Any] {
+    static func parseUNNotificationRequest(_ request: UNNotificationRequest) -> [String: Any] {
         var dictionary = [String: Any]()
         
         dictionary = parseUNNotificationContent(content: request.content)

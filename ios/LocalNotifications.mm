@@ -1,8 +1,7 @@
 #import "LocalNotifications.h"
 #import <React/RCTUtils.h>
 #import <UIKit/UIKit.h>
-#import "UserNotifications/UserNotifications.h"
-#import "react_native_local_notifications-Swift.h"
+
 
 static NSString *kReactNativeGuuNotificationEvent = @"app.guulabs.notification-event";
 
@@ -122,6 +121,7 @@ RCT_EXPORT_METHOD(scheduleNotification:
         reject(@"error", message, NULL);
         return;
     }
+    BOOL showForegroundAlert = [[[notification objectForKey:@"ios"] objectForKey:@"foregroundPresentationOptions"] objectForKey:@"alert"];
     
     NSString *scheduleId = [NotificationScheduler
                             scheduleNotificationWithTitle: title
@@ -131,6 +131,7 @@ RCT_EXPORT_METHOD(scheduleNotification:
                             triggerDate: [NSDate dateWithTimeIntervalSince1970:
                                               [[trigger valueForKey:@"timestamp"] longValue] / 1000
                                          ]
+                            showForegroundAlert: showForegroundAlert
     ];
     resolve(scheduleId);
 }

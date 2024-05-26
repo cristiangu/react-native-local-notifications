@@ -51,12 +51,12 @@ export function cancelAllScheduledNotifications(): Promise<string> {
   return LocalNotifications.cancelAllScheduledNotifications();
 }
 
-export function onForegroundEvent(
+export function onNotificationEvent(
   observer: (event: Event) => void
 ): () => void {
   if (!isFunction(observer)) {
     throw new Error(
-      "guulabs.onForegroundEvent(*) 'observer' expected a function."
+      "guulabs.onNotificationEvent(*) 'observer' expected a function."
     );
   }
 
