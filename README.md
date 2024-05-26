@@ -22,6 +22,7 @@ yarn add @guulabs/react-native-local-notifications
 ```js
 import {
   scheduleNotification,
+  onNotificationEvent,
   cancelScheduledNotifications,
   cancelAllScheduledNotifications,
 } from '@guulabs/react-native-local-notifications';
@@ -38,12 +39,47 @@ const id = await scheduleNotification(
   }
 );
 
+// Listen for notification related events.
+useEffect(() => {
+    onNotificationEvent(({ type, detail }) => {
+      if(type === "notificationPressed") {
+        // Subscribe to this event to handle when a notification is pressed. This can be used for both background and foreground notifications.
+        console.log('On Notification Pressed:', type, detail);
+      } else if(type === "notificationDelivered") {
+        // Subscribe to this event to handle when a notification is delivered and the app is in the foreground.
+        console.log('On Notification Delivered:', type, detail);
+      }
+    });
+  }, []);
+
 // Cancel a list of notification ids
 await cancelScheduledNotifications([id, "another_id1", "another_id2"]);
 
 // Cancel all
 await cancelAllScheduledNotifications();
 ```
+## iOS
+Decide if the app should display [a banner](https://developer.apple.com/documentation/usernotifications/unnotificationpresentationoptions/banner) for a foreground notification.
+```js
+const id = await scheduleNotification(
+  {
+    title: 'Title',
+    body: 'New',
+    data: {
+      key: 'value',
+    },
+    ios: {
+      foregroundPresentationOptions: {
+        banner: true,
+      },
+    },
+  },
+  {
+    timestamp: Date.now() + 5000,
+  }
+);
+```
+
 ## Android
 
 Set a custom icon and set an accent color.
