@@ -41,16 +41,19 @@ const id = await scheduleNotification(
 
 // Listen for notification related events.
 useEffect(() => {
-    onNotificationEvent(({ type, detail }) => {
-      if(type === "notificationPressed") {
-        // Subscribe to this event to handle when a notification is pressed. This can be used for both background and foreground notifications.
-        console.log('On Notification Pressed:', type, detail);
-      } else if(type === "notificationDelivered") {
-        // Subscribe to this event to handle when a notification is delivered and the app is in the foreground.
-        console.log('On Notification Delivered:', type, detail);
-      }
-    });
-  }, []);
+  const unsubscribe = onNotificationEvent(({ type, detail }) => {
+    if(type === "notificationPressed") {
+      // Subscribe to this event to handle when a notification is pressed. This can be used for both background and foreground notifications.
+      console.log('On Notification Pressed:', type, detail);
+    } else if(type === "notificationDelivered") {
+      // Subscribe to this event to handle when a notification is delivered and the app is in the foreground.
+      console.log('On Notification Delivered:', type, detail);
+    }
+  });
+  return () => {
+    unsubscribe();
+  }
+}, []);
 
 // Cancel a list of notification ids
 await cancelScheduledNotifications([id, "another_id1", "another_id2"]);
