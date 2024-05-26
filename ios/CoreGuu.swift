@@ -4,10 +4,10 @@ import UserNotifications
 let kGuuUserInfoNotification = "__guulabs_notification"
 let kGuuUserInfoTrigger = "__guulabs_trigger"
 
-enum CoreEventType : Int {
-    case pressed = 1
-    case actionPressed = 2
-    case delivered = 3
+enum CoreEventType : String {
+    case pressed = "pressed"
+    case actionPressed = "actionPressed"
+    case delivered = "delivered"
 }
 
 //@objc public protocol CoreDelegate: NSObjectProtocol {

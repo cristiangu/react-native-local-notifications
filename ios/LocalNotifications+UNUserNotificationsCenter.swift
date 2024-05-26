@@ -83,7 +83,7 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
             return
         }
         
-        var eventType = -1;
+        var eventType = "";
         let event: NSMutableDictionary = [:]
         let eventDetail: NSMutableDictionary = [:]
         let eventDetailPressAction: NSMutableDictionary = [:]
