@@ -22,6 +22,7 @@ yarn add @guulabs/react-native-local-notifications
 ```js
 import {
   scheduleNotification,
+  onNotificationEvent,
   cancelScheduledNotifications,
   cancelAllScheduledNotifications,
 } from '@guulabs/react-native-local-notifications';
@@ -38,12 +39,50 @@ const id = await scheduleNotification(
   }
 );
 
+// Listen for notification related events.
+useEffect(() => {
+  const unsubscribe = onNotificationEvent(({ type, detail }) => {
+    if(type === "notificationPressed") {
+      // Subscribe to this event to handle when a notification is pressed. This can be used for both background and foreground notifications.
+      console.log('On Notification Pressed:', type, detail);
+    } else if(type === "notificationDelivered") {
+      // Subscribe to this event to handle when a notification is delivered and the app is in the foreground.
+      console.log('On Notification Delivered:', type, detail);
+    }
+  });
+  return () => {
+    unsubscribe();
+  }
+}, []);
+
 // Cancel a list of notification ids
 await cancelScheduledNotifications([id, "another_id1", "another_id2"]);
 
 // Cancel all
 await cancelAllScheduledNotifications();
 ```
+## iOS
+Display [a notification banner](https://developer.apple.com/documentation/usernotifications/unnotificationpresentationoptions/banner) for foreground notifications.
+```js
+const id = await scheduleNotification(
+  {
+    title: 'Title',
+    body: 'New',
+    data: {
+      key: 'value',
+    },
+    ios: {
+      foregroundPresentationOptions: {
+        banner: true,
+      },
+    },
+  },
+  {
+    timestamp: Date.now() + 5000,
+  }
+);
+```
+
 ## Android
 
 Set a custom icon and set an accent color.
@@ -69,6 +108,7 @@ const id = await scheduleNotification(
 |------------|----------------------------------------------|--------------------------------|----------------------------------------------------------------------------------------------------------|
 | title      | `string`                                     |    -                           | Title of the local notification.       |
 | body       | `string`                                     |    -                           |  The body for the local notification.  |
+| ios        | `foregroundPresentationOptions: { banner: bool }` | `foregroundPresentationOptions: { banner: true }` | Show a [notification banner](https://developer.apple.com/documentation/usernotifications/unnotificationpresentationoptions/banner) for the notification events dispatched while the app is in foreground |
 | android    | ` { smallIcon: string, color: string } `     | `{ smallIcon: 'ic_launcher' }` | Use `smallIcon` to set a custom resource name (drawable or mipmap) for the notification icon on Android. </br> Use `color` to set a hex accent color for the notification on Android. |
 | timestamp  | `number`                                     |    -                           | The date in milliseconds when the local notfication should be dispatched. |
 
