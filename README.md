@@ -112,8 +112,8 @@ const id = await scheduleNotification(
 | android    | ` { smallIcon: string, color: string } `     | `{ smallIcon: 'ic_launcher' }` | Use `smallIcon` to set a custom resource name (drawable or mipmap) for the notification icon on Android. </br> Use `color` to set a hex accent color for the notification on Android. |
 | timestamp  | `number`                                     |    -                           | The date in milliseconds when the local notfication should be dispatched. |
 
-## Does this library handle notifications from other libraries?
-No. This library marks the notifications it sends. Internally, notifications from other libraries will be ignored.
+## Does this library interfere with notifications from other libraries?
+No. This library marks the notifications it sends. Internally, notifications from other libraries are ignored.
 
 ## Should I use it?
 
