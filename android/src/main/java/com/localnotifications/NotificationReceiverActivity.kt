@@ -1,0 +1,25 @@
+package com.localnotifications
+
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+
+
+// For Android 12 +
+class NotificationReceiverActivity : Activity() {
+
+  companion object  {
+    val TAG = "NotificationReceiverHandler"
+  }
+  override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+    NotificationReceiverHandler.handleNotification(this, intent)
+    finish()
+  }
+
+  override fun onNewIntent(intent: Intent) {
+    super.onNewIntent(intent)
+    NotificationReceiverHandler.handleNotification(this, intent)
+    finish()
+  }
+}

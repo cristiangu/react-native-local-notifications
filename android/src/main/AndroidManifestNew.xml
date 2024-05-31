@@ -10,5 +10,13 @@
     android:enabled="true"
     android:exported="false"/>
 
+  <activity
+    android:name=".NotificationReceiverActivity"
+    android:noHistory="true"
+    android:excludeFromRecents="true"
+    android:taskAffinity=""
+    android:theme="@android:style/Theme.Translucent.NoTitleBar"
+    android:exported="true" />
+
   </application>
 </manifest>

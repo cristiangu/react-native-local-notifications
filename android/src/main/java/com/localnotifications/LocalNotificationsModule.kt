@@ -7,6 +7,7 @@ import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.localnotifications.util.ArrayUtil
 
+
 class LocalNotificationsModule internal constructor(val context: ReactApplicationContext) :
   LocalNotificationsSpec(context) {
 
@@ -70,7 +71,39 @@ class LocalNotificationsModule internal constructor(val context: ReactApplicatio
     promise?.resolve(null)
   }
 
+  override fun addListener(eventType: String?) {
+    //TODO("Not yet implemented")
+  }
+
+  override fun removeListeners(count: Double) {
+    //TODO("Not yet implemented")
+  }
+
+
   companion object {
     const val NAME = "LocalNotifications"
+
+//    fun onEventReceived(context: Context, intent: Intent) {
+//      val params: WritableMap?
+//      val extras = intent.extras
+//      params = if (extras != null) {
+//        try {
+//          Arguments.fromBundle(extras)
+//        } catch (e: Exception) {
+//          Arguments.createMap()
+//        }
+//      } else {
+//        Arguments.createMap()
+//      }
+//
+//      val reactContext: ReactContext = (context.applicationContext as CustomReactNativeApplication)
+//        .getReactContext()
+//      if (reactContext != null) {
+//        reactContext.getJSModule(
+//          DeviceEventManagerModule.RCTDeviceEventEmitter::class.java
+//        )
+//          .emit("broadcaster-data-received", params)
+//      }
+//    }
   }
 }

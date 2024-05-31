@@ -8,7 +8,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.localnotifications.util.IntentUtil
 import com.localnotifications.util.JsonUtil
 import org.json.JSONObject
 
@@ -28,8 +27,8 @@ class NotificationReceiver : BroadcastReceiver() {
   override fun onReceive(context: Context, intent: Intent) {
     val id = intent.getIntExtra(EXTRA_SCHEDULE_ID, -1)
 
-    val launchActivityClass: Class<*>? = IntentUtil.getLaunchActivity("default", context)
-    val receiverIntent = Intent(context, launchActivityClass)
+    //val launchActivityClass: Class<*>? = IntentUtil.getLaunchActivity("default", context)
+    val receiverIntent = Intent(context, NotificationReceiverActivity::class.java)
     receiverIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
     val pendingIntent = PendingIntent.getActivity(
