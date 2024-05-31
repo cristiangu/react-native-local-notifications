@@ -112,6 +112,9 @@ const id = await scheduleNotification(
 | android    | ` { smallIcon: string, color: string } `     | `{ smallIcon: 'ic_launcher' }` | Use `smallIcon` to set a custom resource name (drawable or mipmap) for the notification icon on Android. </br> Use `color` to set a hex accent color for the notification on Android. |
 | timestamp  | `number`                                     |    -                           | The date in milliseconds when the local notfication should be dispatched. |
 
+## Does this library handle notifications from other libraries?
+No. This library marks the notifications it sends. Internally, notifications from other libraries will be ignored.
+
 ## Should I use it?
 
 This library was desinged to minimize the JS footprint, it contains only a few fuctions defined on the JS side. If your use case requires more than sending some simple local notifications, I strongly advive to use [Notifee](https://github.com/invertase/notifee). 
