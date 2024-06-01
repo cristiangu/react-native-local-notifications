@@ -9,7 +9,7 @@ import android.os.Bundle
 class NotificationReceiverActivity : Activity() {
 
   companion object  {
-    val TAG = "NotificationReceiverHandler"
+    val TAG = "NotificationReceiverActivity"
   }
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)

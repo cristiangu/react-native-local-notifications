@@ -8,7 +8,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.localnotifications.util.JsonUtil
 import org.json.JSONObject
 
 // Constants for notification
@@ -28,17 +27,19 @@ class NotificationReceiver : BroadcastReceiver() {
     val id = intent.getIntExtra(EXTRA_SCHEDULE_ID, -1)
 
     //val launchActivityClass: Class<*>? = IntentUtil.getLaunchActivity("default", context)
-    val receiverIntent = Intent(context, NotificationReceiverActivity::class.java)
+    val receiverIntent = Intent(context.applicationContext, NotificationReceiverActivity::class.java)
+    receiverIntent.putExtras(intent)
     receiverIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
 
     val pendingIntent = PendingIntent.getActivity(
-      context,
+      context.applicationContext,
       id,
       receiverIntent,
       PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
     )
-    val notification = NotificationCompat.Builder(context, channelID)
 
+
+    val notification = NotificationCompat.Builder(context, channelID)
     try {
       val colorHex = intent.getStringExtra(EXTRA_COLOR)
       if(colorHex != null) {
@@ -53,11 +54,11 @@ class NotificationReceiver : BroadcastReceiver() {
       .setSmallIcon(intent.getIntExtra(EXTRA_SMALL_ICON_RES_ID, 0))
       .setContentTitle(intent.getStringExtra(EXTRA_TITLE))
       .setContentText(intent.getStringExtra(EXTRA_MESSAGE))
-      .setExtras(JsonUtil.convertJsonToBundle(jsonObject))
+      //.setExtras(JsonUtil.convertJsonToBundle(jsonObject))
       .setContentIntent(pendingIntent)
       .setAutoCancel(true)
 
-    val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+    val manager = context.applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
     manager.notify(id, notification.build())
   }
 }
