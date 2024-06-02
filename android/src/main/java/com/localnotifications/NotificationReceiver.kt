@@ -33,7 +33,7 @@ class NotificationReceiver : BroadcastReceiver() {
 
     val notification = NotificationCompat.Builder(context, channelID)
     try {
-      val color = notificationModel.android?.getColor()
+      val color = notificationModel.android.getColor()
       if(color != null) {
         notification.setColor(color)
       }
@@ -42,7 +42,7 @@ class NotificationReceiver : BroadcastReceiver() {
     }
 
     notification
-      .setSmallIcon(notificationModel.android?.getSmallIcon(context)!!, 0)
+      .setSmallIcon(notificationModel.android.getSmallIcon(context), 0)
       .setContentTitle(notificationModel.title)
       .setContentText(notificationModel.body)
       .setContentIntent(pendingIntent)

@@ -17,7 +17,7 @@ class NotificationModel(private val mNotificationBundle: Bundle) {
     get() = mNotificationBundle.getString("subtitle")
   val body: String?
     get() = mNotificationBundle.getString("body")
-  val android: NotificationAndroidModel?
+  val android: NotificationAndroidModel
     get() = NotificationAndroidModel.fromBundle(mNotificationBundle.getBundle("android"))
   val data: Bundle
     get() {

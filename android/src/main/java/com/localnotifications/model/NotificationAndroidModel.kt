@@ -13,8 +13,10 @@ class NotificationAndroidModel(private val mNotificationAndroidBundle: Bundle) {
   companion object {
     val TAG = "NotificationAndroidModel"
 
-    fun fromBundle(bundle: Bundle?): NotificationAndroidModel? {
-      if(bundle == null) return null
+    fun fromBundle(bundle: Bundle?): NotificationAndroidModel {
+      if(bundle == null) {
+        return NotificationAndroidModel(Bundle.EMPTY)
+      }
       return NotificationAndroidModel(bundle);
     }
   }
@@ -24,8 +26,8 @@ class NotificationAndroidModel(private val mNotificationAndroidBundle: Bundle) {
    * Gets the small icon resource id from its string name, or null if the icon is missing from the
    * device.
    */
-  fun getSmallIcon(context: Context): Int? {
-    val defaultResourceId =  ResourceUtil.getImageResourceId("ic_launcher", context)
+  fun getSmallIcon(context: Context): Int {
+    val defaultResourceId = ResourceUtil.getImageResourceId("ic_launcher", context)
     if (!mNotificationAndroidBundle.containsKey("smallIcon")) {
       return defaultResourceId
     }
