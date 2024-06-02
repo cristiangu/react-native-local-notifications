@@ -13,13 +13,13 @@ class NotificationReceiverActivity : Activity() {
   }
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    NotificationReceiverHandler.handleNotification(this, intent)
+    NotificationReceiverHandler.handleNotificationPressed(this, intent)
     finish()
   }
 
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
-    NotificationReceiverHandler.handleNotification(this, intent)
+    NotificationReceiverHandler.handleNotificationPressed(this, intent)
     finish()
   }
 }

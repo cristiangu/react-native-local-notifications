@@ -1,11 +1,14 @@
 package com.localnotifications
 
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import com.localnotifications.model.NotificationModel
 import com.localnotifications.util.ArrayUtil
+import java.util.UUID
 
 
 class LocalNotificationsModule internal constructor(val context: ReactApplicationContext) :
@@ -23,32 +26,30 @@ class LocalNotificationsModule internal constructor(val context: ReactApplicatio
   ) {
     val title = notification.getString("title")
     if(title == null) {
-      promise?.reject("Error", "Title prop is missing.")
+      promise?.reject("Error", "title field is missing.")
       return
     }
-    val body = notification.getString("body")
-    val data = notification.getMap("data")
-    val scheduleId = notification.getString("id")
-    val androidParamsMap = notification.getMap("android")
-    val smallIconResName = androidParamsMap?.getString("smallIcon")
-    val colorHex = androidParamsMap?.getString("color")
     if(!trigger.hasKey("timestamp")) {
-      promise?.reject("Error", "Timestamp prop is missing.")
+      promise?.reject("Error", "timestamp field is missing.")
       return
     }
     val dateInMillis = trigger.getDouble("timestamp").toLong()
-
-    val scheduledId = NotificationScheduler.scheduleNotification(
+    val myBundle = Arguments.toBundle(notification)
+    if(myBundle == null) {
+      promise?.reject("Error", "Could not parse the notification fields.")
+      return
+    }
+    if(!myBundle.containsKey("id")) {
+      myBundle.putString("id",  UUID.randomUUID().toString())
+    }
+    val notificationModel = NotificationModel(myBundle)
+    NotificationScheduler.scheduleNotificationNew(
       context,
-      title,
-      body,
-      colorHex,
-      data,
-      smallIconResName,
-      scheduleId,
+      notificationModel,
       dateInMillis
     )
-    promise?.resolve(scheduledId)
+
+    promise?.resolve(notificationModel.id)
   }
 
   @ReactMethod

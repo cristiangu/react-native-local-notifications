@@ -1,6 +1,5 @@
 package com.localnotifications
 
-import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,51 +8,28 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReadableMap
-import com.localnotifications.util.MapUtil
-import com.localnotifications.util.ResourceUtil
+import com.localnotifications.model.EXTRAS_NOTIFICATION
+import com.localnotifications.model.NotificationModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import java.util.UUID
 
 
 object NotificationScheduler {
 
-  @SuppressLint("ScheduleExactAlarm")
-  fun scheduleNotification(
+
+  fun scheduleNotificationNew(
     context: ReactApplicationContext,
-    title: String,
-    body: String?,
-    colorHex: String?,
-    data: ReadableMap?,
-    smallIconResName: String?,
-    scheduleId: String?,
+    notification: NotificationModel,
     triggerDateInMillis: Long
-  ): String {
+  ) {
     createNotificationChannel(context)
 
     // Create an intent for the Notification BroadcastReceiver
     val intent = getNotificationIntent(context)
-    intent.putExtra(EXTRA_TITLE, title)
-    intent.putExtra(EXTRA_MESSAGE, body)
-    val safeScheduleId = scheduleId ?: UUID.randomUUID().toString()
-    intent.putExtra(EXTRA_SCHEDULE_ID, safeScheduleId.hashCode())
-    if(data != null) {
-      intent.putExtra(EXTRA_DATA, MapUtil.toJSONObject(data).toString())
-    }
-
-    val safeSmallIconResName = ResourceUtil.getImageResourceId(
-      smallIconResName ?: "ic_launcher",
-      context
-    )
-    intent.putExtra(EXTRA_SMALL_ICON_RES_ID, safeSmallIconResName)
-
-    if(colorHex != null) {
-      intent.putExtra(EXTRA_COLOR, colorHex)
-    }
+    intent.putExtra(EXTRAS_NOTIFICATION, notification.toBundle())
 
     // Create a PendingIntent for the broadcast
-    val pendingIntent = getBroadcastPendingIntent(context, safeScheduleId, intent)
+    val pendingIntent = getBroadcastPendingIntent(context, notification.id, intent)
     // Get the AlarmManager service
     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -72,10 +48,8 @@ object NotificationScheduler {
     }
 
     runBlocking(Dispatchers.IO) {
-      LocalStorage.addScheduleIds(arrayOf(safeScheduleId), context)
+      LocalStorage.addScheduleIds(arrayOf(notification.id), context)
     }
-
-    return safeScheduleId
   }
 
   private fun createNotificationChannel(context: Context) {
