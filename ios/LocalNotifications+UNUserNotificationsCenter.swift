@@ -67,13 +67,11 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
         let guuTrigger = notification.request.content.userInfo[kGuuUserInfoTrigger] as? Bool
         if let _ = guuTrigger {
             // post DELIVERED event
-            let notificationDict = CoreGuu.parseUNNotificationRequest(notification.request)
+            var notificationDict = CoreGuu.parseUNNotificationRequest(notification.request)
             CoreDelegateHolder.shared.didReceiveGuuCoreEvent(
                 [
                     "type": CoreEventType.notificationDelivered.rawValue,
-                    "detail": [
-                        "notification": notificationDict,
-                    ]
+                    "detail": notificationDict,
                 ])
         }
         completionHandler(presentationOptions)
@@ -89,23 +87,16 @@ extension LocalNotificationsUNUserNotificationCenter: UNUserNotificationCenterDe
 
         var eventType = "";
         let event: NSMutableDictionary = [:]
-        let eventDetail: NSMutableDictionary = [:]
-        let eventDetailPressAction: NSMutableDictionary = [:]
         if(response.actionIdentifier == UNNotificationDefaultActionIdentifier) {
             eventType = CoreEventType.notificationPressed.rawValue
-            eventDetailPressAction["id"] = "default"
         } else {
             // Not yet supported when scheduling a notification.
             eventType = CoreEventType.notificationActionPressed.rawValue
-            eventDetailPressAction["id"] = response.actionIdentifier
         }
 
         let notificationDict = CoreGuu.parseUNNotificationRequest(response.notification.request)
-        eventDetail["notification"] = notificationDict
-        eventDetail["pressAction"] = eventDetailPressAction
-
         event["type"] = eventType
-        event["detail"] = eventDetail
+        event["detail"] = notificationDict
 
         CoreDelegateHolder.shared.didReceiveGuuCoreEvent(event as NSDictionary)
         completionHandler()

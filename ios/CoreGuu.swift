@@ -40,23 +40,12 @@ enum CoreEventType : String {
     
    static func parseUNNotificationContent(content: UNNotificationContent) -> [String: Any] {
         var dictionary = [String: Any]()
-        var iosDict = [String: Any]()
+        let iosDict = [String: Any]()
         
         dictionary["title"] = content.title
         dictionary["subtitle"] = content.subtitle
         dictionary["body"] = content.body
         dictionary["data"] = content.userInfo
-        iosDict["badgeCount"] = content.badge
-        iosDict["categoryId"] = content.categoryIdentifier
-        iosDict["launchImageName"] = content.launchImageName
-        iosDict["threadId"] = content.threadIdentifier
-        
-        if #available(iOS 13.0, macOS 10.15, macCatalyst 13.0, tvOS 13.0, watchOS 6.0, *) {
-            if let targetContentIdentifier = content.targetContentIdentifier {
-                iosDict["targetContentId"] = targetContentIdentifier
-            }
-        }
-        
         dictionary["ios"] = iosDict
         return dictionary
     }
@@ -85,6 +74,9 @@ enum CoreEventType : String {
         }
         
         dictionary["data"] = parseDataFromUserInfo(userInfo as? [String: Any] ?? [:])
+        if let guuNotifiction = userInfo[kGuuUserInfoNotification] as? [String: Any] {
+            dictionary["ios"] = guuNotifiction["ios"]
+        }
         
         return dictionary
     }

@@ -27,7 +27,11 @@ class NotificationModel(private val mNotificationBundle: Bundle) {
 
   @KeepForSdk
   fun toBundle(): Bundle {
-    return mNotificationBundle.clone() as Bundle
+    val bundle = mNotificationBundle.clone() as Bundle
+    if(bundle.containsKey("ios")) {
+      bundle.remove("ios")
+    }
+    return bundle
   }
 
   companion object {
