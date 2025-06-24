@@ -27,6 +27,7 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
+**/.xcode.env.local
 project.xcworkspace
 
 # Android/IJ
@@ -42,7 +43,7 @@ android.iml
 
 # Cocoapods
 #
-example/ios/Pods
+**/Pods/
 
 # Ruby
 example/vendor/
@@ -59,6 +60,7 @@ buck-out/
 \.buckd/
 android/app/libs
 android/keystores/debug.keystore
+.kotlin/
 
 # Yarn
 .yarn/*
@@ -67,6 +69,7 @@ android/keystores/debug.keystore
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
 
 # Expo
 .expo/

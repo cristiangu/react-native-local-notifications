@@ -21,7 +21,7 @@ object ArrayUtil {
         ReadableType.Number -> jsonArray.put(i, readableArray.getDouble(i))
         ReadableType.String -> jsonArray.put(i, readableArray.getString(i))
         ReadableType.Map -> jsonArray.put(i, MapUtil.toJSONObject(readableArray.getMap(i)))
-        ReadableType.Array -> jsonArray.put(i, toJSONArray(readableArray.getArray(i)))
+        ReadableType.Array -> jsonArray.put(i, readableArray.getArray(i)?.let { toJSONArray(it) })
       }
     }
     return jsonArray
@@ -53,7 +53,7 @@ object ArrayUtil {
         ReadableType.Number -> array[i] = readableArray.getDouble(i)
         ReadableType.String -> array[i] = readableArray.getString(i)
         ReadableType.Map -> array[i] = MapUtil.toMap(readableArray.getMap(i))
-        ReadableType.Array -> array[i] = toArray(readableArray.getArray(i))
+        ReadableType.Array -> array[i] = readableArray.getArray(i)?.let { toArray(it) }
       }
     }
     return array

@@ -110,6 +110,7 @@ dependencies {
   implementation "com.facebook.react:react-native:+"
   implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
   implementation 'androidx.datastore:datastore-preferences:1.1.0'
+  api 'androidx.concurrent:concurrent-futures:1.1.0'
 }
 
 if (isNewArchitectureEnabled()) {

@@ -20,7 +20,6 @@ import com.facebook.imagepipeline.datasource.BaseBitmapDataSubscriber
 import com.facebook.imagepipeline.image.CloseableImage
 import com.facebook.imagepipeline.request.ImageRequestBuilder
 import com.facebook.react.runtime.internal.bolts.Task
-import com.facebook.react.runtime.internal.bolts.TaskCompletionSource
 import java.util.Locale
 
 
@@ -109,7 +108,7 @@ object ResourceUtil {
    */
   fun getImageBitmapFromUrl(imageUrl: String, context: Context): Task<Bitmap> {
     val imageUri: Uri
-    val bitmapTCS = TaskCompletionSource<Bitmap>()
+    val bitmapTCS = SettableFuture<Bitmap>()
     val bitmapTask: Task<Bitmap> = bitmapTCS.task
     imageUri = if (!imageUrl.contains("/")) {
       val imageResourceUrl = getImageResourceUrl(imageUrl, context)

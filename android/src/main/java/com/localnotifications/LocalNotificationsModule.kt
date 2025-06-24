@@ -73,11 +73,11 @@ class LocalNotificationsModule internal constructor(val context: ReactApplicatio
   }
 
   override fun addListener(eventType: String?) {
-    //TODO("Not yet implemented")
+    // Required for RN built in Event Emitter Calls.
   }
 
   override fun removeListeners(count: Double) {
-    //TODO("Not yet implemented")
+    // Required for RN built in Event Emitter Calls.
   }
 
 
